@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GrigliaTron — Crea la tua copia gratuita</title>
+  <meta name="description" content="Organizza grigliate, cene ed eventi senza caos su WhatsApp. Segui la guida e pubblica la tua copia gratuita con Netlify e Firebase.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --bg-card: #1a1d27;
+      --bg-hover: #242836;
+      --border: #2e3347;
+      --text: #e8eaed;
+      --text-muted: #9aa0b4;
+      --primary: #FF6B35;
+      --primary-hover: #ff8555;
+      --primary-light: rgba(255, 107, 53, 0.12);
+      --success: #4CAF50;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Hero ─── */
+    .hero {
+      text-align: center;
+      padding: 4rem 1.5rem 3rem;
+      background: linear-gradient(135deg, #1a1d27 0%, #0f1117 50%, #1a1d27 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-emoji { font-size: 4rem; display: block; margin-bottom: 1rem; animation: flame 2s ease-in-out infinite; }
+    @keyframes flame { 0%, 100% { transform: scale(1) rotate(0deg); } 50% { transform: scale(1.1) rotate(3deg); } }
+    .hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero h1 span { background: linear-gradient(135deg, #FF6B35, #ff9a6c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero .subtitle { font-size: 1.125rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem; }
+
+    .hero-stats {
+      display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+    .hero-stat {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.5rem; min-width: 160px;
+    }
+    .hero-stat-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.05em; }
+    .hero-stat-value { font-size: 1.25rem; font-weight: 700; margin-top: 0.25rem; }
+    .hero-stat-value.highlight { color: var(--primary); }
+
+    .hero-cta { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.875rem 1.75rem; border-radius: var(--radius);
+      font-weight: 600; font-size: 1rem; text-decoration: none;
+      cursor: pointer; border: none; transition: all 0.2s;
+      font-family: inherit;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(255,107,53,0.3); }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { background: var(--bg-hover); border-color: var(--primary); }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+    .btn-copy { background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); }
+    .btn-copy:hover { border-color: var(--primary); }
+    .btn-copy.copied { background: var(--success); color: white; border-color: var(--success); }
+
+    /* ─── Container ─── */
+    .container { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+
+    /* ─── Sections ─── */
+    .section { margin-bottom: 3rem; }
+    .section-title {
+      font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .section-title .emoji { font-size: 1.75rem; }
+
+    /* ─── Cards ─── */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.5rem;
+      box-shadow: var(--shadow); margin-bottom: 1.5rem;
+    }
+
+    /* ─── Steps overview ─── */
+    .steps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+    .step-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.25rem; transition: all 0.2s; position: relative; overflow: hidden;
+    }
+    .step-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--primary), #ff9a6c); opacity: 0; transition: opacity 0.2s;
+    }
+    .step-card:hover::before { opacity: 1; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--primary-light);
+      color: var(--primary); display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.875rem; margin-bottom: 0.75rem;
+    }
+    .step-card h4 { font-size: 0.95rem; margin-bottom: 0.25rem; }
+    .step-card p { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* ─── Configurator ─── */
+    .config-form { display: grid; gap: 1.25rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.375rem; }
+    .form-group label { font-size: 0.875rem; font-weight: 600; color: var(--text-muted); }
+    .form-group input {
+      background: var(--bg-hover); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.75rem 1rem; color: var(--text); font-size: 1rem; font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { outline: none; border-color: var(--primary); }
+    .form-group input::placeholder { color: #555a6e; }
+
+    .config-output { display: none; margin-top: 2rem; }
+    .config-output.visible { display: block; }
+
+    .output-item {
+      background: var(--bg-hover); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.25rem; margin-bottom: 1rem;
+    }
+    .output-item-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 0.375rem; }
+    .output-item-value {
+      font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.95rem;
+      color: var(--primary); word-break: break-all; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    }
+    .output-item-value code { flex: 1; }
+
+    /* ─── WhatsApp box ─── */
+    .whatsapp-box {
+      background: linear-gradient(135deg, #1a2e1a, #1a1d27); border: 1px solid #2d5a2d;
+      border-radius: var(--radius-lg); padding: 1.5rem;
+    }
+    .whatsapp-box h3 { color: #25D366; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .whatsapp-text {
+      background: var(--bg); border-radius: var(--radius); padding: 1rem;
+      font-size: 0.95rem; line-height: 1.7; white-space: pre-line; margin-bottom: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    /* ─── Checklist ─── */
+    .checklist { list-style: none; }
+    .checklist li {
+      padding: 0.75rem 0; border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.95rem;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist .check { font-size: 1.125rem; flex-shrink: 0; }
+
+    /* ─── Footer ─── */
+    .footer {
+      text-align: center; padding: 3rem 1.5rem; border-top: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .footer a { color: var(--primary); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 600px) {
+      .hero { padding: 3rem 1rem 2rem; }
+      .hero h1 { font-size: 1.75rem; }
+      .hero-stats { gap: 0.75rem; }
+      .hero-stat { min-width: 140px; padding: 0.75rem 1rem; }
+      .container { padding: 2rem 1rem; }
+      .steps-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero">
+    <span class="hero-emoji">🔥</span>
+    <h1>Crea la tua copia gratuita di <span>GrigliaTron</span></h1>
+    <p class="subtitle">Organizza grigliate, cene ed eventi senza caos su WhatsApp. Segui la guida e pubblica la tua copia gratuita con Netlify e Firebase.</p>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Tempo richiesto</div>
+        <div class="hero-stat-value">15–20 minuti</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Costo</div>
+        <div class="hero-stat-value highlight">0 €</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Serve programmare?</div>
+        <div class="hero-stat-value highlight">No</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Account richiesti</div>
+        <div class="hero-stat-value">Google + Netlify</div>
+      </div>
+    </div>
+
+    <div class="hero-cta">
+      <a href="GUIDA_RAPIDA.md" class="btn btn-primary" target="_blank">📖 Vai alla guida rapida</a>
+      <a href="https://app.netlify.com/start/deploy?repository=https://github.com/Giammariodecandia1/grigliatron" class="btn btn-outline" target="_blank">
+        <img src="https://www.netlify.com/img/deploy/button.svg" alt="Deploy to Netlify" style="height:20px;">
+        Deploy to Netlify
+      </a>
+      <a href="https://github.com/Giammariodecandia1/grigliatron" class="btn btn-outline" target="_blank">⭐ Progetto su GitHub</a>
+    </div>
+  </section>
+
+  <div class="container">
+
+    <!-- ═══ PANORAMICA PASSAGGI ═══ -->
+    <section class="section">
+      <h2 class="section-title"><span class="emoji">📋</span> Cosa farai</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h4>Copia il progetto</h4>
+          <p>Clicca "Deploy to Netlify" per creare la tua copia gratuita del sito.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h4>Crea Firebase</h4>
+          <p>Crea il tuo database gratuito con Firebase per salvare i dati.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h4>Collega le chiavi</h4>
+          <p>Inserisci le chiavi Firebase nelle impostazioni di Netlify.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <h4>Organizza! 🎉</h4>
+          <p>Crea il tuo primo evento e condividi il link con gli amici.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ MINI CONFIGURATORE ═══ -->
+    <section class="section">
+      <h2 class="section-title"><span class="emoji">⚙️</span> Mini configuratore</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Compila i campi qui sotto per generare i nomi e i testi pronti da copiare. <strong>Nessun dato viene salvato.</strong></p>
+
+      <div class="card">
+        <div class="config-form">
+          <div class="form-group">
+            <label for="cfg-name">Il tuo nome</label>
+            <input type="text" id="cfg-name" placeholder="Es: Marco" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="cfg-email">La tua email Gmail</label>
+            <input type="email" id="cfg-email" placeholder="Es: marco.rossi@gmail.com" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="cfg-event">Nome del primo evento</label>
+            <input type="text" id="cfg-event" placeholder="Es: Grigliata di giugno" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="cfg-site">Nome sito desiderato</label>
+            <input type="text" id="cfg-site" placeholder="Es: grigliatron-marco" autocomplete="off">
+          </div>
+          <button class="btn btn-primary" onclick="generateConfig()" style="justify-self: start;">🔥 Genera configurazione</button>
+        </div>
+
+        <!-- Output generato -->
+        <div class="config-output" id="config-output">
+          <hr style="border: none; border-top: 1px solid var(--border); margin: 1.5rem 0;">
+          <h3 style="margin-bottom: 1rem;">✅ La tua configurazione</h3>
+
+          <div class="output-item">
+            <div class="output-item-label">Nome progetto Firebase consigliato</div>
+            <div class="output-item-value"><code id="out-firebase"></code> <button class="btn btn-copy btn-sm" onclick="copyText(this, 'out-firebase')">📋</button></div>
+          </div>
+
+          <div class="output-item">
+            <div class="output-item-label">Nome sito Netlify consigliato</div>
+            <div class="output-item-value"><code id="out-netlify"></code> <button class="btn btn-copy btn-sm" onclick="copyText(this, 'out-netlify')">📋</button></div>
+          </div>
+
+          <div class="output-item">
+            <div class="output-item-label">Variabile admin suggerita</div>
+            <div class="output-item-value"><code id="out-admin"></code> <button class="btn btn-copy btn-sm" onclick="copyText(this, 'out-admin')">📋</button></div>
+          </div>
+
+          <div class="output-item">
+            <div class="output-item-label">URL del tuo sito (dopo il deploy)</div>
+            <div class="output-item-value"><code id="out-url"></code> <button class="btn btn-copy btn-sm" onclick="copyText(this, 'out-url')">📋</button></div>
+          </div>
+
+          <!-- Checklist personalizzata -->
+          <div style="margin-top: 1.5rem;">
+            <h4 style="margin-bottom: 0.75rem;">📝 La tua checklist personalizzata</h4>
+            <ul class="checklist" id="out-checklist"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ MESSAGGIO WHATSAPP ═══ -->
+    <section class="section">
+      <h2 class="section-title"><span class="emoji">💬</span> Messaggio da condividere</h2>
+      <div class="whatsapp-box">
+        <h3>📱 Testo pronto per WhatsApp</h3>
+        <div class="whatsapp-text" id="whatsapp-text">Ti giro GrigliaTron: è un tool gratuito per organizzare grigliate, cene ed eventi senza caos su WhatsApp.
+
+Apri questa guida e segui i passaggi:
+👉 https://github.com/Giammariodecandia1/grigliatron
+
+Ti permette di creare la tua copia online gratuita usando Netlify e Firebase. Non devi programmare: devi solo seguire la guida passo passo.
+
+Alla fine avrai un link personale da condividere con gli amici per organizzare il tuo evento.</div>
+        <button class="btn btn-copy" onclick="copyWhatsApp(this)">📋 Copia messaggio</button>
+      </div>
+
+      <!-- Messaggio invito evento (generato) -->
+      <div class="whatsapp-box" style="margin-top: 1.5rem; display: none;" id="whatsapp-invite-box">
+        <h3>🎉 Invito evento personalizzato</h3>
+        <div class="whatsapp-text" id="whatsapp-invite"></div>
+        <button class="btn btn-copy" onclick="copyInvite(this)">📋 Copia invito</button>
+      </div>
+    </section>
+
+    <!-- ═══ CTA FINALE ═══ -->
+    <section class="section" style="text-align: center;">
+      <h2 style="font-size: 1.75rem; margin-bottom: 1rem;">Pronto? 🔥</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Segui la guida rapida o clicca il bottone per iniziare subito.</p>
+      <div class="hero-cta">
+        <a href="GUIDA_RAPIDA.md" class="btn btn-primary" target="_blank">📖 Vai alla guida rapida</a>
+        <a href="https://app.netlify.com/start/deploy?repository=https://github.com/Giammariodecandia1/grigliatron" class="btn btn-outline" target="_blank">🚀 Deploy to Netlify</a>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <p style="font-size: 2rem; margin-bottom: 0.5rem;">🔥</p>
+    <p style="font-weight: 600; font-size: 1.125rem; color: var(--text); margin-bottom: 1rem;">GrigliaTron</p>
+    <p>
+      Progetto open source ideato e sviluppato da <strong>Giammario de Candia</strong>.
+    </p>
+    <p style="margin-top: 0.5rem;">
+      Nasce da un'esigenza reale: organizzare una grigliata tra amici senza perdersi nel caos dei messaggi,
+      delle liste duplicate e dei "chi porta cosa?".
+    </p>
+    <p style="margin-top: 1rem;">
+      <a href="https://www.linkedin.com/in/giammario-de-candia-11895090" target="_blank">🔗 LinkedIn — Giammario de Candia</a>
+    </p>
+
+    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed var(--border); max-width: 400px; margin-left: auto; margin-right: auto;">
+      <p style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text);">🍺 Offrimi una birra</p>
+      <p style="font-size: 0.9rem; margin-bottom: 1rem;">Se il progetto ti è stato utile, puoi offrirmi simbolicamente una birra.</p>
+      <a href="https://paypal.me/Aeroverify" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="border-color: var(--primary); color: var(--primary);">
+        🍺 Supporta il progetto
+      </a>
+    </div>
+
+    <p style="margin-top: 2rem; font-size: 0.8rem;">MIT License • Nessun dato viene raccolto da questa pagina</p>
+  </footer>
+
+  <script>
+    function slugify(text) {
+      return text
+        .toLowerCase()
+        .replace(/[àáâãäå]/g, 'a').replace(/[èéêë]/g, 'e').replace(/[ìíîï]/g, 'i')
+        .replace(/[òóôõö]/g, 'o').replace(/[ùúûü]/g, 'u')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .substring(0, 30);
+    }
+
+    function generateConfig() {
+      const name = document.getElementById('cfg-name').value.trim();
+      const email = document.getElementById('cfg-email').value.trim();
+      const event = document.getElementById('cfg-event').value.trim();
+      const site = document.getElementById('cfg-site').value.trim();
+
+      if (!name) { alert('Inserisci il tuo nome'); return; }
+
+      const slug = site ? slugify(site) : 'grigliatron-' + slugify(name);
+
+      document.getElementById('out-firebase').textContent = slug;
+      document.getElementById('out-netlify').textContent = slug;
+      document.getElementById('out-admin').textContent = email ? 'VITE_ADMIN_EMAILS=' + email : '(inserisci la tua email)';
+      document.getElementById('out-url').textContent = 'https://' + slug + '.netlify.app';
+
+      // Checklist
+      const checklist = document.getElementById('out-checklist');
+      const steps = [
+        '⬜ Clicca "Deploy to Netlify" per creare la tua copia',
+        '⬜ Crea progetto Firebase con nome: <strong>' + slug + '</strong>',
+        '⬜ Registra una Web App nel progetto Firebase',
+        '⬜ Abilita Google come metodo di login in Firebase Authentication',
+        '⬜ Crea il database Firestore e incolla le rules',
+        '⬜ Crea lo Storage e incolla le rules',
+        '⬜ Copia le 6 chiavi API dal progetto Firebase',
+        '⬜ Inserisci le variabili su Netlify' + (email ? ' (inclusa VITE_ADMIN_EMAILS=' + email + ')' : ''),
+        '⬜ Fai "Trigger deploy" su Netlify',
+        '⬜ Aggiungi <strong>' + slug + '.netlify.app</strong> ai domini autorizzati in Firebase Auth',
+        '⬜ Apri <strong>https://' + slug + '.netlify.app</strong> e crea il primo evento' + (event ? ': <strong>' + event + '</strong>' : ''),
+        '⬜ Condividi il link dell\'evento agli amici! 🎉'
+      ];
+      checklist.innerHTML = steps.map(s => '<li><span class="check">📌</span> <span>' + s + '</span></li>').join('');
+
+      // Invito WhatsApp
+      if (event) {
+        const inviteBox = document.getElementById('whatsapp-invite-box');
+        inviteBox.style.display = 'block';
+        document.getElementById('whatsapp-invite').textContent =
+          '🔥 Ti invito su GrigliaTron per organizzarci senza caos su WhatsApp.\n\n' +
+          '📋 Evento: ' + event + '\n\n' +
+          'Apri il link, conferma la presenza e scegli cosa portare:\n' +
+          '👉 https://' + slug + '.netlify.app\n\n' +
+          '(Se non hai un account Google puoi entrare come ospite, basta il tuo nome!)';
+      }
+
+      document.getElementById('config-output').classList.add('visible');
+      document.getElementById('config-output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function copyText(btn, sourceId) {
+      const text = document.getElementById(sourceId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.classList.add('copied');
+        btn.textContent = '✅';
+        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = '📋'; }, 2000);
+      });
+    }
+
+    function copyWhatsApp(btn) {
+      const text = document.getElementById('whatsapp-text').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.classList.add('copied');
+        btn.textContent = '✅ Copiato!';
+        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = '📋 Copia messaggio'; }, 2500);
+      });
+    }
+
+    function copyInvite(btn) {
+      const text = document.getElementById('whatsapp-invite').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.classList.add('copied');
+        btn.textContent = '✅ Copiato!';
+        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = '📋 Copia invito'; }, 2500);
+      });
+    }
+  </script>
+</body>
+</html>
