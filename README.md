@@ -7,7 +7,7 @@ Niente server da gestire, niente database a pagamento: si appoggia interamente a
 
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=URL_REPOSITORY_GITHUB)
 
-> 💡 **Non sei uno sviluppatore?** Leggi la [GUIDA_RAPIDA.md](GUIDA_RAPIDA.md) oppure apri la [pagina Setup interattiva](https://github.com/Giammariodecandia1/grigliatron/blob/main/public/setup.html) per creare la tua copia in 20 minuti senza scrivere una riga di codice.
+> 💡 **Non sei uno sviluppatore?** Leggi la [GUIDA_RAPIDA.md](https://github.com/Giammariodecandia1/grigliatron/blob/main/GUIDA_RAPIDA.md) per creare la tua copia in 20 minuti senza scrivere una riga di codice.
 
 ---
 
@@ -84,8 +84,7 @@ Non devi programmare. Ti servono solo un **account Google** e un **account Netli
 
 Hai due opzioni:
 
-1. **📖 [Leggi la GUIDA_RAPIDA.md](GUIDA_RAPIDA.md)** — Tutorial passo passo con screenshot e FAQ.
-2. **🔥 [Apri la pagina Setup interattiva](https://github.com/Giammariodecandia1/grigliatron/blob/main/public/setup.html)** - Mini configuratore che ti genera i nomi e i testi pronti da copiare.
+1. **📖 [Leggi la GUIDA_RAPIDA.md](https://github.com/Giammariodecandia1/grigliatron/blob/main/GUIDA_RAPIDA.md)** — Tutorial passo passo con screenshot e FAQ.
 
 ---
 
