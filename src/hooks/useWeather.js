@@ -17,7 +17,7 @@ export function useWeather(latitude, longitude, targetDate) {
   useEffect(() => {
     if (!latitude || !longitude) {
       setWeather(null);
-      setError("Aggiungi le coordinate esatte (latitudine e longitudine) modificando l'evento per sbloccare il meteo.");
+      setError("Per attivare il meteo, vai su Dove & Quando → Modifica e assicurati di aver inserito il nome del luogo (es. 'Foligno'), poi clicca Salva.");
       setLoading(false);
       return;
     }
