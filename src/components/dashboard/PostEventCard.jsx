@@ -10,7 +10,7 @@ import { compressImage } from '../../utils/imageCompressor';
  * Permette all'admin di:
  * - Caricare foto ricordo (diventa la copertina)
  * - Generare il PDF Report dell'evento
- * - Pulire gli scontrini da Storage
+ * - Archiviare gli scontrini
  */
 export default function PostEventCard() {
   const { user } = useAuth();
@@ -39,17 +39,17 @@ export default function PostEventCard() {
 
   const handleCleanup = async () => {
     if (!confirmCleanup) {
-      alert('Devi confermare di aver salvato il PDF prima di eliminare gli scontrini.');
+      alert('Devi confermare di aver salvato il PDF prima di archiviare gli scontrini.');
       return;
     }
-    if (!window.confirm('Sei sicuro? Questa operazione eliminerà definitivamente le foto degli scontrini per liberare spazio.')) {
+    if (!window.confirm('Sei sicuro? Questa operazione nasconderà definitivamente le foto degli scontrini dalla bacheca.')) {
       return;
     }
 
-    setLoadingMsg('Pulizia scontrini in corso...');
+    setLoadingMsg('Archiviazione scontrini in corso...');
     try {
       await cleanupReceipts();
-      setLoadingMsg('Scontrini eliminati con successo!');
+      setLoadingMsg('Scontrini archiviati con successo!');
       setTimeout(() => setLoadingMsg(''), 3000);
     } catch (err) {
       console.error(err);
@@ -88,7 +88,7 @@ export default function PostEventCard() {
     >
       <div className="post-event-content">
         <p className="post-event-desc">
-          L'evento è concluso! Ora puoi generare il report finale e liberare spazio sul server eliminando gli scontrini.
+          L'evento è concluso! Ora puoi generare il report finale e archiviare gli scontrini.
         </p>
 
         {loadingMsg && (
@@ -122,8 +122,8 @@ export default function PostEventCard() {
 
             {receiptsCount > 0 && (
               <div className="cleanup-section">
-                <h4>Liberare spazio? ({receiptsCount} scontrini)</h4>
-                <p>Gli scontrini pesano. Genera prima il PDF (che li include), poi eliminali dalla piattaforma.</p>
+                <h4>Archiviare gli scontrini? ({receiptsCount} scontrini)</h4>
+                <p>Genera prima il PDF (che li include in miniatura), poi archiviali per nasconderli dalla bacheca principale.</p>
                 <label className="cleanup-confirm-label">
                   <input
                     type="checkbox"
@@ -137,7 +137,7 @@ export default function PostEventCard() {
                   onClick={handleCleanup}
                   disabled={!confirmCleanup || !!loadingMsg}
                 >
-                  🗑️ Elimina scontrini da Storage
+                  📦 Archivia scontrini
                 </button>
               </div>
             )}

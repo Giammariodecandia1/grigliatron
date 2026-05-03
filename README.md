@@ -5,7 +5,7 @@ Nasce per risolvere il problema dei gruppi WhatsApp caotici, delle liste duplica
 
 Niente server da gestire, niente database a pagamento: si appoggia interamente al piano Spark (gratuito) di Firebase e a Netlify.
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/Giammariodecandia1/grigliatron)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=URL_REPOSITORY_GITHUB)
 
 > 💡 **Non sei uno sviluppatore?** Leggi la [GUIDA_RAPIDA.md](https://github.com/Giammariodecandia1/grigliatron/blob/main/GUIDA_RAPIDA.md) per creare la tua copia in 20 minuti senza scrivere una riga di codice.
 
@@ -92,7 +92,7 @@ Hai due opzioni:
 
 Clicca il bottone per creare la tua copia gratuita:
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/Giammariodecandia1/grigliatron)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=URL_REPOSITORY_GITHUB)
 
 Dopo il deploy, dovrai:
 1. Creare un progetto Firebase (gratuito)
@@ -113,7 +113,7 @@ Tutti i dettagli nella [GUIDA_RAPIDA.md](GUIDA_RAPIDA.md).
 ### Step 2: Configura i servizi
 1. **Authentication**: Abilita il metodo **Google** nella tab "Sign-in method".
 2. **Firestore Database**: Crea il database in modalità produzione. Incolla il contenuto di [`firestore.rules`](firestore.rules) nella tab Regole.
-3. **Storage**: Crea lo storage. Incolla il contenuto di [`storage.rules`](storage.rules) nella tab Regole.
+3. **Cloudinary**: Crea un account gratuito su Cloudinary per abilitare l'upload di foto e scontrini. Copia il tuo *Cloud Name* e crea un *Upload Preset* (Unsigned).
 
 ### Step 3: Inserisci le variabili su Netlify
 In **Site configuration > Environment variables**, inserisci:
@@ -123,9 +123,9 @@ In **Site configuration > Environment variables**, inserisci:
 | `VITE_FIREBASE_API_KEY` | La tua apiKey |
 | `VITE_FIREBASE_AUTH_DOMAIN` | Il tuo authDomain |
 | `VITE_FIREBASE_PROJECT_ID` | Il tuo projectId |
-| `VITE_FIREBASE_STORAGE_BUCKET` | Il tuo storageBucket |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Il tuo messagingSenderId |
 | `VITE_FIREBASE_APP_ID` | Il tuo appId |
+| `VITE_CLOUDINARY_CLOUD_NAME` | Il Cloud Name (da Cloudinary) |
+| `VITE_CLOUDINARY_UPLOAD_PRESET` | L'Upload preset creato (da Cloudinary) |
 | `VITE_ADMIN_EMAILS` *(opzionale)* | La tua email per super-admin |
 
 ### Step 4: Autorizza il dominio
@@ -173,13 +173,13 @@ In ogni caso, **solo il Creatore (o gli Admin)** può eliminare l'evento o modif
 Se vuoi modificare il codice di GrigliaTron sul tuo PC:
 
 1. Assicurati di avere [Node.js](https://nodejs.org/) installato.
-2. Clona la repository: `git clone https://github.com/Giammariodecandia1/grigliatron`
+2. Clona la repository: `git clone URL_REPOSITORY_GITHUB`
 3. Installa le dipendenze: `npm install`
 4. Copia `.env.example` in `.env` e riempilo con le tue API keys di Firebase.
 5. Avvia il server: `npm run dev`
 6. Apri `http://localhost:5173` nel browser.
 
-**Stack tecnologico:** React + Vite + Firebase (Auth, Firestore, Storage) + React Router
+**Stack tecnologico:** React + Vite + Firebase (Auth, Firestore) + Cloudinary + React Router
 
 ---
 

@@ -5,9 +5,7 @@ import Card from '../shared/Card';
 import EmptyState from '../shared/EmptyState';
 import { getTheme } from '../../config/themes';
 import { formatCurrency, formatTimestamp } from '../../utils/formatters';
-import { compressImage } from '../../utils/imageCompressor';
-import { storage } from '../../config/firebase';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { uploadImageToCloudinary, isCloudinaryConfigured } from '../../services/cloudinaryService';
 
 /**
  * Card Costi & Scontrini.
@@ -63,31 +61,8 @@ export default function ExpensesCard() {
       return;
     }
     setFile(file);
-    // Genera preview locale
     const url = URL.createObjectURL(file);
     setPreview(url);
-  };
-
-  const compressAndUpload = async (file, statusSetter) => {
-    if (!file || !storage) return { receiptUrl: null, receiptPath: null };
-
-    statusSetter('Preparazione...');
-
-    // Comprimi l'immagine se necessario
-    const result = await compressImage(file, statusSetter);
-    const uploadBlob = result.blob;
-
-    statusSetter('Upload in corso...');
-
-    const filename = `${Date.now()}_receipt.jpg`;
-    const receiptPath = `events/${event.id}/receipts/${filename}`;
-    const fileRef = ref(storage, receiptPath);
-
-    await uploadBytes(fileRef, uploadBlob);
-    const receiptUrl = await getDownloadURL(fileRef);
-
-    statusSetter('');
-    return { receiptUrl, receiptPath };
   };
 
   // ─── Create expense ─────────────────────────────────────────────
@@ -97,7 +72,10 @@ export default function ExpensesCard() {
 
     setIsUploading(true);
     try {
-      const { receiptUrl, receiptPath } = await compressAndUpload(receiptFile, setCompressionStatus);
+      let uploadResult = null;
+      if (receiptFile) {
+        uploadResult = await uploadImageToCloudinary(receiptFile, setCompressionStatus);
+      }
 
       // Chi ha pagato: se selezionato dal dropdown, usa quello; altrimenti l'utente corrente
       const selectedParticipant = form.paidBy
@@ -110,8 +88,8 @@ export default function ExpensesCard() {
         notes: form.notes.trim(),
         paidBy: selectedParticipant ? selectedParticipant.id : user.uid,
         paidByName: selectedParticipant ? selectedParticipant.name : (user.displayName || 'Anonimo'),
-        receiptUrl: receiptUrl || null,
-        receiptPath: receiptPath || null,
+        receiptUrl: uploadResult ? uploadResult.url : null,
+        receiptPublicId: uploadResult ? uploadResult.publicId : null,
       });
 
       // Reset
@@ -132,13 +110,7 @@ export default function ExpensesCard() {
   // ─── Delete expense ─────────────────────────────────────────────
   const handleDelete = async (exp) => {
     if (window.confirm('Eliminare questa spesa?')) {
-      if (exp.receiptPath && storage) {
-        try {
-          await deleteObject(ref(storage, exp.receiptPath));
-        } catch (error) {
-          console.error('Errore eliminazione scontrino:', error);
-        }
-      }
+      // Nota: Non eliminiamo fisicamente il file da Cloudinary dal frontend (richiede auth backend)
       await deleteExpense(exp.id);
     }
   };
@@ -180,16 +152,11 @@ export default function ExpensesCard() {
 
       // Se è stato aggiunto/sostituito uno scontrino
       if (editReceiptFile) {
-        // Elimina il vecchio scontrino se presente
-        if (exp.receiptPath && storage) {
-          try {
-            await deleteObject(ref(storage, exp.receiptPath));
-          } catch (e) { /* ignore */ }
+        const uploadResult = await uploadImageToCloudinary(editReceiptFile, setEditCompressionStatus);
+        if (uploadResult) {
+          updateData.receiptUrl = uploadResult.url;
+          updateData.receiptPublicId = uploadResult.publicId;
         }
-
-        const { receiptUrl, receiptPath } = await compressAndUpload(editReceiptFile, setEditCompressionStatus);
-        updateData.receiptUrl = receiptUrl;
-        updateData.receiptPath = receiptPath;
       }
 
       await updateItem('expenses', exp.id, updateData);
@@ -290,17 +257,21 @@ export default function ExpensesCard() {
                           <span className="receipt-current-label">Nuovo scontrino</span>
                         </div>
                       )}
-                      <label className="btn btn-sm btn-outline receipt-change-btn">
-                        📸 {exp.receiptUrl ? 'Cambia scontrino' : 'Aggiungi scontrino'}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          capture="environment"
-                          className="input-file-hidden"
-                          ref={editFileInputRef}
-                          onChange={e => handleFileSelect(e.target.files[0], setEditReceiptFile, setEditReceiptPreview)}
-                        />
-                      </label>
+                      {isCloudinaryConfigured ? (
+                        <label className="btn btn-sm btn-outline receipt-change-btn">
+                          📸 {exp.receiptUrl ? 'Cambia scontrino' : 'Aggiungi scontrino'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            className="input-file-hidden"
+                            ref={editFileInputRef}
+                            onChange={e => handleFileSelect(e.target.files[0], setEditReceiptFile, setEditReceiptPreview)}
+                          />
+                        </label>
+                      ) : (
+                        <span className="text-muted" style={{ fontSize: '0.8em' }}>Upload foto non configurato.</span>
+                      )}
                       {editCompressionStatus && (
                         <span className="receipt-compression-status">{editCompressionStatus}</span>
                       )}
@@ -447,37 +418,43 @@ export default function ExpensesCard() {
 
           {/* Upload scontrino */}
           <div className="receipt-upload-container">
-            <label className="btn btn-outline btn-sm receipt-upload-btn">
-              📸 {receiptFile ? 'Cambia foto' : 'Allega scontrino'}
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="input-file-hidden"
-                ref={fileInputRef}
-                onChange={e => handleFileSelect(e.target.files[0], setReceiptFile, setReceiptPreview)}
-              />
-            </label>
-            {receiptPreview && (
-              <div className="receipt-preview-container">
-                <img src={receiptPreview} alt="Preview scontrino" className="receipt-preview-img" />
-                <button
-                  type="button"
-                  className="receipt-preview-remove"
-                  onClick={() => {
-                    setReceiptFile(null);
-                    URL.revokeObjectURL(receiptPreview);
-                    setReceiptPreview(null);
-                    if (fileInputRef.current) fileInputRef.current.value = '';
-                  }}
-                  title="Rimuovi"
-                >
-                  ✕
-                </button>
-              </div>
-            )}
-            {compressionStatus && (
-              <span className="receipt-compression-status">{compressionStatus}</span>
+            {isCloudinaryConfigured ? (
+              <>
+                <label className="btn btn-outline btn-sm receipt-upload-btn">
+                  📸 {receiptFile ? 'Cambia foto' : 'Allega scontrino'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="input-file-hidden"
+                    ref={fileInputRef}
+                    onChange={e => handleFileSelect(e.target.files[0], setReceiptFile, setReceiptPreview)}
+                  />
+                </label>
+                {receiptPreview && (
+                  <div className="receipt-preview-container">
+                    <img src={receiptPreview} alt="Preview scontrino" className="receipt-preview-img" />
+                    <button
+                      type="button"
+                      className="receipt-preview-remove"
+                      onClick={() => {
+                        setReceiptFile(null);
+                        URL.revokeObjectURL(receiptPreview);
+                        setReceiptPreview(null);
+                        if (fileInputRef.current) fileInputRef.current.value = '';
+                      }}
+                      title="Rimuovi"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+                {compressionStatus && (
+                  <span className="receipt-compression-status">{compressionStatus}</span>
+                )}
+              </>
+            ) : (
+              <span className="text-muted" style={{ fontSize: '0.9em', display: 'block', margin: '10px 0' }}>📸 Upload foto non configurato.</span>
             )}
           </div>
 

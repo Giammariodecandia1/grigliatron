@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
-import { db, storage } from '../config/firebase';
+import { db } from '../config/firebase';
 import {
   collection,
   doc,
@@ -14,7 +14,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { uploadImageToCloudinary } from '../services/cloudinaryService';
 import { getTemplate } from '../config/templates';
 import { isGlobalAdmin } from '../config/adminEmails';
 
@@ -416,42 +416,34 @@ export function EventProvider({ eventId, currentUser, children }) {
 
   // ─── Cover Image (Post-evento) ──────────────────────────────────
   const uploadCoverImage = useCallback(async (file) => {
-    if (!eventId || !storage || !file) return null;
-    const ext = file.name.split('.').pop() || 'jpg';
-    const coverPath = `events/${eventId}/cover/event-cover.${ext}`;
-    const fileRef = ref(storage, coverPath);
-    await uploadBytes(fileRef, file);
-    const url = await getDownloadURL(fileRef);
+    if (!eventId || !file) return null;
+    const result = await uploadImageToCloudinary(file);
+    if (!result) return null;
     await updateDoc(doc(db, 'events', eventId), {
-      coverImageUrl: url,
-      coverImagePath: coverPath,
+      coverImageUrl: result.url,
+      coverImagePublicId: result.publicId,
       postEventPhotoUploadedAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
-    return url;
+    return result.url;
   }, [eventId]);
 
-  // ─── Cleanup Receipts (libera Storage) ──────────────────────────
+  // ─── Cleanup Receipts (Archiviazione logica) ────────────────────
   /**
-   * Cancella tutti i file scontrino da Firebase Storage e pulisce
-   * i campi receiptUrl/receiptPath dai documenti expense.
+   * Pulisce i riferimenti agli scontrini dai documenti expense.
+   * Con Cloudinary non facciamo l'eliminazione fisica unsigned per sicurezza.
    * Imposta receiptArchived = true per indicare che lo scontrino
    * è stato archiviato nel PDF.
    */
   const cleanupReceipts = useCallback(async () => {
-    if (!eventId || !storage) return;
-    const expensesWithReceipts = expenses.filter(e => e.receiptPath);
+    if (!eventId) return;
+    const expensesWithReceipts = expenses.filter(e => e.receiptUrl);
     for (const exp of expensesWithReceipts) {
-      try {
-        await deleteObject(ref(storage, exp.receiptPath));
-      } catch (err) {
-        console.warn(`Non riesco a cancellare ${exp.receiptPath}:`, err.message);
-      }
       await updateDoc(doc(db, 'events', eventId, 'expenses', exp.id), {
         receiptUrl: null,
-        receiptPath: null,
+        receiptPublicId: null,
+        receiptPath: null, // retrocompatibilità
         receiptArchived: true,
-        updatedAt: serverTimestamp(),
       });
     }
   }, [eventId, expenses]);

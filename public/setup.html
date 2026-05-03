@@ -210,11 +210,11 @@
 
     <div class="hero-cta">
       <a href="GUIDA_RAPIDA.md" class="btn btn-primary" target="_blank">📖 Vai alla guida rapida</a>
-      <a href="https://app.netlify.com/start/deploy?repository=https://github.com/Giammariodecandia1/grigliatron" class="btn btn-outline" target="_blank">
+      <a href="https://app.netlify.com/start/deploy?repository=URL_REPOSITORY_GITHUB" class="btn btn-outline" target="_blank">
         <img src="https://www.netlify.com/img/deploy/button.svg" alt="Deploy to Netlify" style="height:20px;">
         Deploy to Netlify
       </a>
-      <a href="https://github.com/Giammariodecandia1/grigliatron" class="btn btn-outline" target="_blank">⭐ Progetto su GitHub</a>
+      <a href="URL_REPOSITORY_GITHUB" class="btn btn-outline" target="_blank">⭐ Progetto su GitHub</a>
     </div>
   </section>
 
@@ -315,7 +315,7 @@
         <div class="whatsapp-text" id="whatsapp-text">Ti giro GrigliaTron: è un tool gratuito per organizzare grigliate, cene ed eventi senza caos su WhatsApp.
 
 Apri questa guida e segui i passaggi:
-👉 https://github.com/Giammariodecandia1/grigliatron
+👉 URL_REPOSITORY_GITHUB
 
 Ti permette di creare la tua copia online gratuita usando Netlify e Firebase. Non devi programmare: devi solo seguire la guida passo passo.
 
@@ -337,7 +337,7 @@ Alla fine avrai un link personale da condividere con gli amici per organizzare i
       <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Segui la guida rapida o clicca il bottone per iniziare subito.</p>
       <div class="hero-cta">
         <a href="GUIDA_RAPIDA.md" class="btn btn-primary" target="_blank">📖 Vai alla guida rapida</a>
-        <a href="https://app.netlify.com/start/deploy?repository=https://github.com/Giammariodecandia1/grigliatron" class="btn btn-outline" target="_blank">🚀 Deploy to Netlify</a>
+        <a href="https://app.netlify.com/start/deploy?repository=URL_REPOSITORY_GITHUB" class="btn btn-outline" target="_blank">🚀 Deploy to Netlify</a>
       </div>
     </section>
   </div>
@@ -403,9 +403,9 @@ Alla fine avrai un link personale da condividere con gli amici per organizzare i
         '⬜ Registra una Web App nel progetto Firebase',
         '⬜ Abilita Google come metodo di login in Firebase Authentication',
         '⬜ Crea il database Firestore e incolla le rules',
-        '⬜ Crea lo Storage e incolla le rules',
-        '⬜ Copia le 6 chiavi API dal progetto Firebase',
-        '⬜ Inserisci le variabili su Netlify' + (email ? ' (inclusa VITE_ADMIN_EMAILS=' + email + ')' : ''),
+        '⬜ Copia le 5 chiavi API dal progetto Firebase',
+        '⬜ Crea account Cloudinary per l\\'upload foto (opzionale ma consigliato)',
+        '⬜ Inserisci le variabili su Netlify (inclusa VITE_ADMIN_EMAILS=' + (email ? email : 'la_tua_email') + ' e chiavi Cloudinary se usate)',
         '⬜ Fai "Trigger deploy" su Netlify',
         '⬜ Aggiungi <strong>' + slug + '.netlify.app</strong> ai domini autorizzati in Firebase Auth',
         '⬜ Apri <strong>https://' + slug + '.netlify.app</strong> e crea il primo evento' + (event ? ': <strong>' + event + '</strong>' : ''),
