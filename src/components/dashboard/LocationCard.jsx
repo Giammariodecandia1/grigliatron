@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useEvent } from '../../contexts/EventContext';
 import Card from '../shared/Card';
 import { getTheme } from '../../config/themes';
+import { extractCoordinates } from '../../utils/locationUtils';
 
 /**
  * Card Dove & Quando — info luogo, orari, Google Maps.
@@ -12,6 +13,7 @@ export default function LocationCard() {
   const { event, updateEvent } = useEvent();
   const theme = getTheme(event?.theme || event?.type);
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({});
 
   if (!event) return null;
@@ -32,8 +34,22 @@ export default function LocationCard() {
   };
 
   const handleSave = async () => {
-    await updateEvent(form);
+    setSaving(true);
+    let updatedForm = { ...form };
+    const locationChanged = form.locationName !== event.locationName || form.locationAddress !== event.locationAddress || form.mapsUrl !== event.mapsUrl;
+    const missingCoords = !event.latitude || !event.longitude;
+
+    if (locationChanged || missingCoords) {
+      const coords = await extractCoordinates(form.locationName, form.locationAddress, form.mapsUrl);
+      if (coords) {
+        updatedForm.latitude = coords.latitude;
+        updatedForm.longitude = coords.longitude;
+      }
+    }
+
+    await updateEvent(updatedForm);
     setEditing(false);
+    setSaving(false);
   };
 
   return (
@@ -84,8 +100,10 @@ export default function LocationCard() {
             <textarea className="input textarea" value={form.locationNotes} onChange={e => setForm({...form, locationNotes: e.target.value})} />
           </label>
           <div className="add-item-buttons">
-            <button className="btn btn-primary btn-sm" onClick={handleSave}>Salva</button>
-            <button className="btn btn-ghost btn-sm" onClick={() => setEditing(false)}>Annulla</button>
+            <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving}>
+              {saving ? 'Salvataggio...' : 'Salva'}
+            </button>
+            <button className="btn btn-ghost btn-sm" onClick={() => setEditing(false)} disabled={saving}>Annulla</button>
           </div>
         </div>
       ) : (

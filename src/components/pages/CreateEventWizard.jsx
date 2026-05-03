@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { db } from '../../config/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { getThemeList } from '../../config/themes';
+import { extractCoordinates } from '../../utils/locationUtils';
 
 const STEPS = ['info', 'quando', 'dove', 'tema', 'conferma'];
 const STEP_LABELS = ['Informazioni', 'Quando', 'Dove', 'Tema e accesso', 'Conferma'];
@@ -73,6 +74,15 @@ export default function CreateEventWizard() {
     try {
       const eventId = generateSlug(form.title);
 
+      // Extract coords
+      let lat = null;
+      let lon = null;
+      const coords = await extractCoordinates(form.locationName, form.locationAddress, form.mapsUrl);
+      if (coords) {
+        lat = coords.latitude;
+        lon = coords.longitude;
+      }
+
       await setDoc(doc(db, 'events', eventId), {
         title: form.title.trim(),
         type: form.type,
@@ -87,9 +97,9 @@ export default function CreateEventWizard() {
         locationAddress: form.locationAddress.trim(),
         mapsUrl: form.mapsUrl.trim(),
         locationNotes: form.locationNotes.trim(),
-        // Coordinates (empty, user can add later)
-        latitude: null,
-        longitude: null,
+        // Coordinates
+        latitude: lat,
+        longitude: lon,
         // Admin: the creator
         createdBy: user.email,
         createdByName: user.displayName || 'Organizzatore',
