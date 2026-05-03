@@ -9,8 +9,8 @@
  * da smartphone moderni possono arrivare a 8-15MB.
  */
 
-const MAX_SIZE_BYTES = 4.5 * 1024 * 1024; // 4.5MB target (margine di sicurezza vs 5MB limit)
-const MAX_DIMENSION = 1920; // Max larghezza o altezza in px
+const MAX_SIZE_BYTES = 500 * 1024; // 500KB target per caricamenti rapidissimi
+const MAX_DIMENSION = 1200; // Larghezza/altezza max ridotta per gli scontrini
 const QUALITY_STEPS = [0.85, 0.7, 0.55, 0.4, 0.3]; // Qualità JPEG progressive
 const MIN_DIMENSION = 800; // Non scendere sotto questa risoluzione
 
