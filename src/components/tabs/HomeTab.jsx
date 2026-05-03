@@ -4,6 +4,7 @@ import { useCountdown } from '../../hooks/useCountdown';
 import { getTheme } from '../../config/themes';
 import { formatDateWithDay } from '../../utils/formatters';
 import { getInitials } from '../../utils/formatters';
+import { useWeather } from '../../hooks/useWeather';
 
 /**
  * HomeTab — Centro di comando compatto.
@@ -15,6 +16,7 @@ export default function HomeTab({ onNavigate }) {
   const { event, participants, foodItems, gearItems, tasks, expenses, updates, reviews, polls } = useEvent();
   const countdown = useCountdown(event?.date, event?.time);
   const theme = getTheme(event?.theme || event?.type);
+  const { weather } = useWeather(event?.latitude, event?.longitude, event?.date);
 
   if (!event) return null;
 
@@ -121,8 +123,8 @@ export default function HomeTab({ onNavigate }) {
       tab: 'info',
       emoji: theme.sectionEmojis.weather,
       title: 'Meteo',
-      badge: '🌤️',
-      badgeType: 'info',
+      badge: weather ? `${Math.round(weather.tempMax)}° ${weather.icon}` : '🌤️',
+      badgeType: weather ? 'ok' : 'info',
     },
     {
       id: 'participants',
@@ -176,6 +178,7 @@ export default function HomeTab({ onNavigate }) {
               {formatDateWithDay(event.date)}
               {event.time && ` — ${event.time}`}
               {event.locationName && ` — ${event.locationName}`}
+              {weather && ` — ${weather.icon} ${Math.round(weather.tempMax)}°C`}
             </p>
           </div>
         </div>

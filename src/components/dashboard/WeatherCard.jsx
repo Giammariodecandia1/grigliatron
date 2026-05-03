@@ -31,10 +31,9 @@ export default function WeatherCard() {
           <p>Caricamento meteo...</p>
         </div>
       ) : error ? (
-        <div className="weather-error">
-          <span className="weather-icon-large">🌤️</span>
-          <p className="weather-error-text">{error}</p>
-          <p className="weather-fallback">Il meteo sarà disponibile più vicino alla data dell'evento.</p>
+        <div className="weather-error" style={{ textAlign: 'center', padding: '1rem' }}>
+          <span className="weather-icon-large" style={{ opacity: 0.5 }}>🤷‍♂️</span>
+          <p className="weather-error-text" style={{ color: 'var(--text-muted)' }}>{error}</p>
         </div>
       ) : weather ? (
         <div className="weather-data">

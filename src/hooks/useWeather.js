@@ -15,7 +15,16 @@ export function useWeather(latitude, longitude, targetDate) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!latitude || !longitude || !targetDate) {
+    if (!latitude || !longitude) {
+      setWeather(null);
+      setError("Aggiungi le coordinate esatte (latitudine e longitudine) modificando l'evento per sbloccare il meteo.");
+      setLoading(false);
+      return;
+    }
+
+    if (!targetDate) {
+      setWeather(null);
+      setError("Data dell'evento mancante.");
       setLoading(false);
       return;
     }
