@@ -10,7 +10,7 @@ import { getInitials } from '../../utils/formatters';
  */
 export default function ParticipantsCard() {
   const { user } = useAuth();
-  const { event, isEventAdmin, participants, joinEvent, updateParticipant, removeParticipant, addGuestParticipant, foodItems, gearItems, tasks } = useEvent();
+  const { event, isEventAdmin, participants, joinEvent, updateParticipant, removeParticipant, addGuestParticipant, foodItems, gearItems, tasks, updateEvent } = useEvent();
   const theme = getTheme(event?.theme || event?.type);
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [noteText, setNoteText] = useState('');
@@ -60,6 +60,24 @@ export default function ParticipantsCard() {
     if (!isNaN(num) && num >= 0) {
       await updateParticipant(userId, { quoteCount: num });
     }
+  };
+
+  // ─── Admin: toggle co-admin powers ────────────────────────────
+  const handleToggleAdmin = async (participantEmail) => {
+    if (!participantEmail) return;
+    const currentAdmins = Array.isArray(event.admins) ? event.admins : (event.createdBy ? [event.createdBy] : []);
+    
+    let newAdmins;
+    if (currentAdmins.includes(participantEmail)) {
+      if (currentAdmins.length <= 1) {
+        alert("Non puoi rimuovere l'ultimo amministratore dell'evento!");
+        return;
+      }
+      newAdmins = currentAdmins.filter(e => e !== participantEmail);
+    } else {
+      newAdmins = [...currentAdmins, participantEmail];
+    }
+    await updateEvent({ admins: newAdmins });
   };
 
   // ─── Utente: salva il proprio link PayPal ─────────────────────
@@ -177,6 +195,11 @@ export default function ParticipantsCard() {
                   <span className="participant-name">
                     {p.name}
                     {p.isGuest && <span className="participant-badge-guest" title="Ospite senza account">👤 Ospite</span>}
+                    {p.email && (Array.isArray(event.admins) ? event.admins : [event.createdBy]).includes(p.email) && (
+                      <span className="participant-badge-admin" title="Amministratore dell'evento" style={{ marginLeft: '6px', fontSize: '0.8em', background: 'rgba(255, 215, 0, 0.2)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(255, 215, 0, 0.4)' }}>
+                        👑 Admin
+                      </span>
+                    )}
                   </span>
                   <span className="participant-status-label">
                     {p.status === 'partecipo' ? '✅' : p.status === 'forse' ? '🤔' : '❌'}
@@ -208,6 +231,21 @@ export default function ParticipantsCard() {
                       onBlur={e => handleQuoteChange(p.id, e.target.value)}
                     />
                   </label>
+                  {p.email && (
+                    <button
+                      className="btn btn-sm btn-ghost"
+                      onClick={() => handleToggleAdmin(p.email)}
+                      title={(Array.isArray(event.admins) ? event.admins : [event.createdBy]).includes(p.email) ? "Rimuovi privilegi admin" : "Promuovi a co-admin"}
+                      style={{ 
+                        fontSize: '1.2em', 
+                        padding: '0 4px',
+                        opacity: (Array.isArray(event.admins) ? event.admins : [event.createdBy]).includes(p.email) ? 1 : 0.2,
+                        filter: (Array.isArray(event.admins) ? event.admins : [event.createdBy]).includes(p.email) ? 'none' : 'grayscale(100%)'
+                      }}
+                    >
+                      👑
+                    </button>
+                  )}
                   {p.id !== user?.uid && (
                     <button
                       className="btn btn-sm btn-ghost btn-danger"
