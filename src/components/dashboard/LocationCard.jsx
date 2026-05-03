@@ -20,6 +20,8 @@ export default function LocationCard() {
 
   const handleEdit = () => {
     setForm({
+      date: event.date || '',
+      time: event.time || '',
       locationName: event.locationName || '',
       locationAddress: event.locationAddress || '',
       mapsUrl: event.mapsUrl || '',
@@ -63,6 +65,16 @@ export default function LocationCard() {
     >
       {editing ? (
         <div className="location-edit-form">
+          <div className="form-row">
+            <label className="form-label">
+              📅 Data evento
+              <input type="date" className="input" value={form.date} onChange={e => setForm({...form, date: e.target.value})} />
+            </label>
+            <label className="form-label">
+              🕐 Orario evento
+              <input className="input" value={form.time} onChange={e => setForm({...form, time: e.target.value})} placeholder="mattina, 09:00, ecc." />
+            </label>
+          </div>
           <label className="form-label">
             Luogo
             <input className="input" value={form.locationName} onChange={e => setForm({...form, locationName: e.target.value})} />
