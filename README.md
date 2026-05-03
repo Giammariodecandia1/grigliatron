@@ -5,7 +5,7 @@ Nasce per risolvere il problema dei gruppi WhatsApp caotici, delle liste duplica
 
 Niente server da gestire, niente database a pagamento: si appoggia interamente al piano Spark (gratuito) di Firebase e a Netlify.
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=URL_REPOSITORY_GITHUB)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/Giammariodecandia1/grigliatron)
 
 > 💡 **Non sei uno sviluppatore?** Leggi la [GUIDA_RAPIDA.md](https://github.com/Giammariodecandia1/grigliatron/blob/main/GUIDA_RAPIDA.md) per creare la tua copia in 20 minuti senza scrivere una riga di codice.
 
@@ -92,7 +92,7 @@ Hai due opzioni:
 
 Clicca il bottone per creare la tua copia gratuita:
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=URL_REPOSITORY_GITHUB)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/Giammariodecandia1/grigliatron)
 
 Dopo il deploy, dovrai:
 1. Creare un progetto Firebase (gratuito)
@@ -173,7 +173,7 @@ In ogni caso, **solo il Creatore (o gli Admin)** può eliminare l'evento o modif
 Se vuoi modificare il codice di GrigliaTron sul tuo PC:
 
 1. Assicurati di avere [Node.js](https://nodejs.org/) installato.
-2. Clona la repository: `git clone URL_REPOSITORY_GITHUB`
+2. Clona la repository: `git clone https://github.com/Giammariodecandia1/grigliatron`
 3. Installa le dipendenze: `npm install`
 4. Copia `.env.example` in `.env` e riempilo con le tue API keys di Firebase.
 5. Avvia il server: `npm run dev`
