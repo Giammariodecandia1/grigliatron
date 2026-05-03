@@ -12,7 +12,6 @@ function SetupScreen() {
     { key: 'VITE_FIREBASE_API_KEY', ok: !!import.meta.env.VITE_FIREBASE_API_KEY },
     { key: 'VITE_FIREBASE_AUTH_DOMAIN', ok: !!import.meta.env.VITE_FIREBASE_AUTH_DOMAIN },
     { key: 'VITE_FIREBASE_PROJECT_ID', ok: !!import.meta.env.VITE_FIREBASE_PROJECT_ID },
-    { key: 'VITE_FIREBASE_STORAGE_BUCKET', ok: !!import.meta.env.VITE_FIREBASE_STORAGE_BUCKET },
     { key: 'VITE_FIREBASE_MESSAGING_SENDER_ID', ok: !!import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID },
     { key: 'VITE_FIREBASE_APP_ID', ok: !!import.meta.env.VITE_FIREBASE_APP_ID },
   ];
