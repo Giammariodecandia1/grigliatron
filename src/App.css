@@ -1351,48 +1351,61 @@ select.input {
   display: inline-block;
 }
 
-/* Modal Scontrino Fullscreen */
+/* Modal Scontrino Fullscreen (rendered via Portal in document.body) */
 .receipt-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.95);
-  z-index: 1000;
+  z-index: 9999;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Permette lo scroll dall'alto */
-  padding: var(--space-xl) var(--space-md);
-  overflow-y: auto; /* Abilita lo scroll verticale per scontrini lunghi */
+  justify-content: flex-start;
+  padding: var(--space-lg) var(--space-md);
+  padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 16px));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Scroll fluido su iOS */
+  overscroll-behavior: contain; /* Impedisce scroll del body sotto */
+  animation: fadeIn 0.2s ease;
 }
 
 .receipt-modal-content {
   position: relative;
   max-width: min(800px, 95vw);
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-xl);
+  gap: var(--space-md);
+  padding-bottom: 80px; /* Spazio per il bottone sticky */
 }
 
 .receipt-modal-img {
   width: 100%;
-  height: auto; /* Permette alla foto di allungarsi quanto serve */
+  max-width: 100%;
+  height: auto;
   object-fit: contain;
   border-radius: var(--radius-md);
   box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-  background: white; /* Aiuta a leggere scontrini con trasparenza */
+  background: white;
+  /* Permette pinch-to-zoom su mobile */
+  touch-action: pinch-zoom;
 }
 
 .receipt-modal-close {
   min-width: 200px;
-  position: sticky;
-  bottom: 0;
-  margin-top: var(--space-md);
-  box-shadow: 0 -10px 20px rgba(0,0,0,0.5);
+  position: fixed;
+  bottom: calc(var(--space-lg) + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.6);
+  animation: slideUp 0.3s ease;
 }
 
 .expenses-total {

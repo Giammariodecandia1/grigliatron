@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEvent } from '../../contexts/EventContext';
 import Card from '../shared/Card';
@@ -480,8 +481,8 @@ export default function ExpensesCard() {
         </form>
       )}
 
-      {/* ─── Modal Anteprima Scontrino (fullscreen) ─────────────── */}
-      {previewImage && (
+      {/* ─── Modal Anteprima Scontrino (fullscreen via Portal) ──── */}
+      {previewImage && createPortal(
         <div className="receipt-modal-overlay" onClick={() => setPreviewImage(null)}>
           <div className="receipt-modal-content" onClick={e => e.stopPropagation()}>
             <img src={previewImage} alt="Scontrino" className="receipt-modal-img" />
@@ -489,7 +490,8 @@ export default function ExpensesCard() {
               ✕ Chiudi
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </Card>
   );

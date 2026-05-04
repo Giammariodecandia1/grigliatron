@@ -148,23 +148,19 @@ export default function UpdatesCard() {
             ))}
           </div>
 
-          {/* Email notification checkbox */}
-          <div className="email-notify-row">
-            <label className={`email-notify-label ${!emailEnabled ? 'email-notify-disabled' : ''}`}>
-              <input
-                type="checkbox"
-                checked={notifyEmail}
-                onChange={e => setNotifyEmail(e.target.checked)}
-                disabled={!emailEnabled}
-              />
-              <span>📧 Notifica via email</span>
-              {!emailEnabled && (
-                <span className="email-notify-tooltip" title="Configura VITE_EMAIL_NOTIFICATIONS_ENABLED=true nel .env">
-                  (non configurato)
-                </span>
-              )}
-            </label>
-          </div>
+          {/* Email notification checkbox — visibile solo se configurato */}
+          {emailEnabled && (
+            <div className="email-notify-row">
+              <label className="email-notify-label">
+                <input
+                  type="checkbox"
+                  checked={notifyEmail}
+                  onChange={e => setNotifyEmail(e.target.checked)}
+                />
+                <span>📧 Notifica via email</span>
+              </label>
+            </div>
+          )}
 
           <div className="add-item-buttons">
             <button type="submit" className="btn btn-primary btn-sm" disabled={isSending}>
