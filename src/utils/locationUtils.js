@@ -29,6 +29,15 @@ export async function extractCoordinates(locationName, locationAddress, mapsUrl)
   // Infine l'indirizzo da solo
   if (addr && addr !== name) queries.push(addr);
 
+  // Aggiungi split per virgola (se l'utente scrive "Monte Alago, Nocera Umbra", prova "Nocera Umbra")
+  if (name && name.includes(',')) {
+    const parts = name.split(',').map(p => p.trim());
+    // Aggiungi l'ultima parte (spesso è la città)
+    if (parts.length > 1 && parts[parts.length - 1]) {
+      queries.push(parts[parts.length - 1]);
+    }
+  }
+
   for (const query of queries) {
     try {
       const res = await fetch(
