@@ -5,5 +5,3 @@ dist
 .env.*.local
 *.log
 .DS_Store
-
-NETLIFY_ENV_DA_COPIARE.txt
