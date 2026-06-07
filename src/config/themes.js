@@ -1,0 +1,161 @@
+/**
+ * Temi dinamici per tipo di evento.
+ * Ogni tema definisce colori, emoji, icone e microcopy.
+ */
+const themes = {
+  grigliata: {
+    id: 'grigliata',
+    label: 'Grigliata',
+    gradient: 'linear-gradient(135deg, #FF6B35 0%, #D32F2F 100%)',
+    gradientSubtle: 'linear-gradient(135deg, rgba(255,107,53,0.15) 0%, rgba(211,47,47,0.10) 100%)',
+    accent: '#FF6B35',
+    accentLight: 'rgba(255,107,53,0.15)',
+    headerEmoji: '🔥',
+    tagline: 'Fuoco, carne e buona compagnia',
+    sectionEmojis: {
+      countdown: '⏱️',
+      participants: '👥',
+      food: '🥩',
+      gear: '⛺',
+      tasks: '📋',
+      location: '📍',
+      weather: '🌤️',
+      expenses: '💰',
+      updates: '📢',
+      reviews: '⭐',
+    },
+    emptyMessages: {
+      food: 'Nessuna carne sulla griglia... ancora!',
+      gear: 'Serve qualcosa? Aggiungi qui!',
+      tasks: 'Tutto fatto? Oppure nessuno ha iniziato 😄',
+      updates: 'Silenzio radio. Nessun aggiornamento.',
+      reviews: 'L\'evento non è ancora finito!',
+    },
+  },
+  compleanno: {
+    id: 'compleanno',
+    label: 'Compleanno',
+    gradient: 'linear-gradient(135deg, #E040FB 0%, #7C4DFF 100%)',
+    gradientSubtle: 'linear-gradient(135deg, rgba(224,64,251,0.15) 0%, rgba(124,77,255,0.10) 100%)',
+    accent: '#E040FB',
+    accentLight: 'rgba(224,64,251,0.15)',
+    headerEmoji: '🎂',
+    tagline: 'Festa, regali e risate',
+    sectionEmojis: {
+      countdown: '🎉',
+      participants: '🥳',
+      food: '🍰',
+      gear: '🎈',
+      tasks: '🎁',
+      location: '📍',
+      weather: '🌤️',
+      expenses: '💰',
+      updates: '📢',
+      reviews: '⭐',
+    },
+    emptyMessages: {
+      food: 'Niente da mangiare? Impossibile!',
+      gear: 'Palloncini? Musica? Aggiungi qui!',
+      tasks: 'Chi compra la torta?',
+      updates: 'Nessun aggiornamento ancora.',
+      reviews: 'La festa non è ancora finita!',
+    },
+  },
+  cena: {
+    id: 'cena',
+    label: 'Cena',
+    gradient: 'linear-gradient(135deg, #FFB74D 0%, #FF7043 100%)',
+    gradientSubtle: 'linear-gradient(135deg, rgba(255,183,77,0.15) 0%, rgba(255,112,67,0.10) 100%)',
+    accent: '#FFB74D',
+    accentLight: 'rgba(255,183,77,0.15)',
+    headerEmoji: '🍷',
+    tagline: 'Buon cibo, buon vino, buona compagnia',
+    sectionEmojis: {
+      countdown: '⏱️',
+      participants: '👥',
+      food: '🍝',
+      gear: '🍽️',
+      tasks: '📋',
+      location: '📍',
+      weather: '🌤️',
+      expenses: '💰',
+      updates: '📢',
+      reviews: '⭐',
+    },
+    emptyMessages: {
+      food: 'Il menu è ancora vuoto!',
+      gear: 'Tovaglie? Candele? Aggiungi qui!',
+      tasks: 'Chi prenota il ristorante?',
+      updates: 'Tutto tranquillo per ora.',
+      reviews: 'La cena non è ancora finita!',
+    },
+  },
+  viaggio: {
+    id: 'viaggio',
+    label: 'Viaggio',
+    gradient: 'linear-gradient(135deg, #26C6DA 0%, #1565C0 100%)',
+    gradientSubtle: 'linear-gradient(135deg, rgba(38,198,218,0.15) 0%, rgba(21,101,192,0.10) 100%)',
+    accent: '#26C6DA',
+    accentLight: 'rgba(38,198,218,0.15)',
+    headerEmoji: '🗺️',
+    tagline: 'Zaino in spalla e si parte',
+    sectionEmojis: {
+      countdown: '✈️',
+      participants: '🧳',
+      food: '🥪',
+      gear: '🎒',
+      tasks: '📋',
+      location: '📍',
+      weather: '🌤️',
+      expenses: '💰',
+      updates: '📢',
+      reviews: '⭐',
+    },
+    emptyMessages: {
+      food: 'Snack per il viaggio? Aggiungi!',
+      gear: 'Non dimenticare il caricatore!',
+      tasks: 'Chi guida?',
+      updates: 'Nessun aggiornamento.',
+      reviews: 'Il viaggio non è ancora finito!',
+    },
+  },
+  uscita: {
+    id: 'uscita',
+    label: 'Uscita',
+    gradient: 'linear-gradient(135deg, #66BB6A 0%, #2E7D32 100%)',
+    gradientSubtle: 'linear-gradient(135deg, rgba(102,187,106,0.15) 0%, rgba(46,125,50,0.10) 100%)',
+    accent: '#66BB6A',
+    accentLight: 'rgba(102,187,106,0.15)',
+    headerEmoji: '🌿',
+    tagline: 'Aria fresca e buona compagnia',
+    sectionEmojis: {
+      countdown: '⏱️',
+      participants: '👥',
+      food: '🍕',
+      gear: '🎒',
+      tasks: '📋',
+      location: '📍',
+      weather: '🌤️',
+      expenses: '💰',
+      updates: '📢',
+      reviews: '⭐',
+    },
+    emptyMessages: {
+      food: 'Qualcosa da sgranocchiare?',
+      gear: 'Cosa serve? Aggiungi qui!',
+      tasks: 'Niente da fare? Beati voi!',
+      updates: 'Nessuna novità.',
+      reviews: "L'uscita non è ancora finita!",
+    },
+  },
+};
+
+export function getTheme(eventType) {
+  return themes[eventType] || themes.uscita;
+}
+
+export function getThemeList() {
+  return Object.values(themes).map(t => ({ id: t.id, label: t.label, emoji: t.headerEmoji }));
+}
+
+export default themes;

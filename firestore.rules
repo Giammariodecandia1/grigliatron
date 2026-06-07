@@ -1,0 +1,76 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helper: check if user is super-admin ──────────────────────
+    function isSuperAdmin() {
+      // Opzionale: puoi aggiungere qui email di super-admin globali
+      return request.auth != null && false;
+    }
+
+    // ─── Helper: user is authenticated with Google ─────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // ─── Events ────────────────────────────────────────────────────
+    match /events/{eventId} {
+      // Chiunque (anche guest non autenticati) può leggere gli eventi
+      allow read: if true;
+      
+      // Qualsiasi utente autenticato con Google può creare un evento
+      allow create: if isAuthenticated();
+      
+      // Solo l'admin dell'evento (creatore o in admins) o un super-admin può modificarlo/cancellarlo
+      allow update, delete: if isSuperAdmin() || (
+        isAuthenticated() && (
+          request.auth.token.email in resource.data.admins ||
+          request.auth.token.email == resource.data.createdBy
+        )
+      );
+
+      // ─── Sub-collections dell'evento ─────────────────────────────
+      // Per supportare i Guest (che non hanno un account Firebase Auth),
+      // l'accesso in scrittura alle liste è aperto. La sicurezza è gestita 
+      // dalla UI (il guestId deve corrispondere per modificare i propri item).
+      // NB: Questo è un sistema "trust-based" per eventi informali tra amici.
+      
+      match /participants/{userId} {
+        allow read, write: if true;
+      }
+      match /foodItems/{itemId} {
+        allow read, write: if true;
+      }
+      match /gearItems/{itemId} {
+        allow read, write: if true;
+      }
+      match /tasks/{taskId} {
+        allow read, write: if true;
+      }
+      match /updates/{updateId} {
+        allow read, write: if true;
+      }
+      match /expenses/{expenseId} {
+        allow read, write: if true;
+      }
+      match /reviews/{reviewId} {
+        allow read, write: if true;
+      }
+      match /polls/{pollId} {
+        allow read, write: if true;
+      }
+      match /shoppingLinks/{linkId} {
+        allow read, write: if true;
+      }
+    }
+
+    // ─── Mail collection (Notifiche email) ─────────────────────────
+    match /mail/{mailId} {
+      allow read: if false;
+      // Permettiamo la creazione a tutti i membri dell'evento
+      // (la UI limita l'accesso a chi è admin o autore)
+      allow create: if true;
+    }
+  }
+}

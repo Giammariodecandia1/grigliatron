@@ -1,0 +1,791 @@
+
+
+
+    
+GrigliaTron — Documento Tecnico di Implementazione
+Versione documento:
+ 
+1.0
+Obiettivo:
+ 
+trasformare GrigliaTron da web app funzionante per singolo evento a piattaforma collaborativa modulare, mobile-first e pronta per evoluzione open source.
+Destinatario:
+ 
+sviluppatore AI / agente di coding / Antigravity
+Ruolo guida:
+ 
+capo sviluppatore / product owner tecnico
+1. Visione del progetto
+GrigliaTron nasce come gestionale leggero per organizzare una grigliata tra amici, ma l’utilizzo reale ha dimostrato che il concetto è valido anche per altri eventi informali: compleanni, cene, uscite, weekend, feste, ritrovi e piccoli viaggi.
+L’obiettivo della prossima evoluzione è trasformarlo in una web app collaborativa più matura, mantenendo però tre principi fondamentali:
+Semplicità assoluta per l’utente finale
+L’utente deve capire subito cosa fare, senza sentirsi davanti a un gestionale complesso.
+Mobile-first reale
+La versione mobile è prioritaria. L’utente deve avere tutto chiaro dalla prima schermata, senza dover scrollare a lungo.
+Architettura modulare e open-source ready
+Il codice deve essere pulito, scalabile e pubblicabile in futuro su GitHub, senza dati personali, credenziali o logiche hardcoded.
+2. Problema emerso dall’uso reale
+Durante l’evento reale, GrigliaTron è stato chiaro e apprezzato dai partecipanti. Tuttavia è emerso un problema UX importante:
+Nella versione mobile, la dashboard risultava troppo lunga. Per vedere tutte le sezioni bisognava scrollare molto, e questo rendeva l’esperienza più scomoda e potenzialmente confusionaria.
+La soluzione non è ridurre le funzioni, ma riorganizzarle.
+La nuova versione deve evitare la dashboard infinita e introdurre una navigazione più simile a una vera app.
+3. Obiettivo UX principale
+La prima schermata deve essere un
+ 
+centro di comando compatto
+.
+Da mobile, appena l’utente apre GrigliaTron deve capire immediatamente:
+che evento sta guardando;
+quando e dove si svolge;
+cosa riguarda lui direttamente;
+se deve portare qualcosa;
+se deve pagare qualcosa;
+se ci sono sondaggi aperti;
+se ci sono aggiornamenti importanti;
+quali sezioni può aprire.
+Non deve più essere costretto a scorrere tutte le sezioni una dopo l’altra.
+4. Nuova architettura di navigazione
+4.1 Home compatta
+La Home deve mostrare solo le informazioni essenziali e una griglia di card compatte.
+Esempio concettuale:
+🔥 Grigliata in montagna
+2 maggio · Foligno · Mancano X giorni
+La mia parte
+- Hai preso: 2 cose
+- Da pagare: 18,75 €
+- Sondaggi aperti: 1
+Sezioni
+🍖 Cibo & Bevande       12 elementi · 3 liberi
+🧰 Attrezzatura         8 elementi · 1 libero
+✅ Cose da fare         5 task · 2 da fare
+📊 Sondaggi             1 aperto
+💶 Quote & Pagamenti    quota stimata 18,75 €
+🧾 Scontrini            2 caricati
+📍 Dove & Quando        Foligno · 2 maggio
+☀️ Meteo                aggiornato
+💬 Aggiornamenti        1 urgente
+⭐ Recensioni           post-evento
+Ogni card deve essere cliccabile e aprire la sezione corrispondente.
+4.2 Bottom navigation mobile
+Su mobile introdurre una bottom navigation persistente con 5 tab:
+Home | Liste | Sondaggi | Spese | Info
+Home
+Contiene riepilogo evento, riepilogo personale e card rapide.
+Liste
+Contiene:
+Cibo & Bevande;
+Attrezzatura & Cose utili;
+Cose da fare.
+Sondaggi
+Contiene:
+sondaggi attivi;
+sondaggi chiusi;
+creazione nuovo sondaggio.
+Spese
+Contiene:
+Costi & Scontrini;
+Quote & Pagamenti;
+pagamenti consigliati;
+link PayPal se configurati;
+link offerte supermercati.
+Info
+Contiene:
+Dove & Quando;
+Meteo;
+Aggiornamenti;
+Recensioni post-evento;
+eventuali impostazioni personali.
+4.3 Desktop
+Su desktop si può mantenere una visualizzazione più ampia, ma senza ricreare una dashboard infinita. Anche su desktop le sezioni devono essere organizzate in tab, card apribili o colonne tematiche.
+5. Permessi utente: modifica e cancellazione dei propri elementi
+5.1 Problema
+Se un utente inserisce un elemento sbagliato, oggi rischia di dover chiedere all’admin di correggerlo.
+5.2 Requisito
+Ogni utente deve poter modificare ed eliminare ciò che ha creato lui.
+5.3 Regole
+Un utente partecipante può:
+creare elementi;
+modificare gli elementi creati da lui;
+eliminare gli elementi creati da lui;
+prendersi in carico elementi liberi;
+liberare elementi presi in carico da lui;
+segnare come completati elementi presi in carico da lui.
+L’admin può:
+modificare tutto;
+eliminare tutto;
+liberare task assegnati ad altri;
+correggere dati errati;
+gestire partecipanti, quote, spese, recensioni e aggiornamenti.
+5.4 Dati obbligatori su ogni documento utente
+Ogni elemento creato dagli utenti deve contenere:
+createdBy
+createdByName
+createdAt
+updatedAt
+Se assegnabile:
+assignedTo
+assignedToName
+assignedAt
+status
+5.5 UI
+Mostrare i pulsanti
+ 
+Modifica
+ 
+ed
+ 
+Elimina
+ 
+solo se:
+currentUser.uid === createdBy || currentUser is admin
+6. Sezione Sondaggi
+6.1 Obiettivo
+Aggiungere una sezione per prendere decisioni prima dell’evento, soprattutto su cosa comprare o su preferenze organizzative.
+6.2 Esempi di sondaggi
+Che carne prendiamo?
+- Salsicce
+- Arrosticini
+- Costine
+- Bistecche
+Dove facciamo la spesa?
+- Coop
+- Conad
+- Lidl
+- Eurospin
+A che ora partiamo?
+- 9:00
+- 9:30
+- 10:00
+6.3 Funzioni richieste
+Gli utenti devono poter:
+creare un sondaggio;
+inserire una domanda;
+aggiungere opzioni;
+scegliere voto singolo o multiplo;
+votare;
+vedere i risultati;
+modificare o cancellare i propri sondaggi;
+chiudere i propri sondaggi.
+L’admin deve poter:
+modificare qualsiasi sondaggio;
+eliminare qualsiasi sondaggio;
+chiudere qualsiasi sondaggio;
+trasformare un’opzione vincente in elemento di una lista.
+6.4 Funzione speciale: trasformare opzione in item
+Se un sondaggio decide cosa comprare, l’admin deve poter cliccare:
+Trasforma in item
+E scegliere se aggiungere l’opzione a:
+Cibo & Bevande;
+Attrezzatura & Cose utili;
+Cose da fare.
+6.5 Struttura Firestore suggerita
+events/{eventId}/polls/{pollId}
+  question
+  options: [
+    { id, text }
+  ]
+  multipleChoice
+  status: "open" | "closed"
+  createdBy
+  createdByName
+  createdAt
+  updatedAt
+events/{eventId}/polls/{pollId}/votes/{userId}
+  selectedOptionIds: []
+  userName
+  createdAt
+  updatedAt
+7. Sezione Offerte spesa / Volantini supermercati
+7.1 Obiettivo
+Aggiungere una funzione marginale ma utile per raccogliere link a volantini, offerte e promozioni dei supermercati.
+7.2 Posizionamento UX
+Non deve diventare una sezione primaria troppo invasiva. Deve stare dentro:
+Spese → Offerte spesa
+oppure come sottosezione di:
+Cibo & Bevande
+7.3 Funzioni
+Gli utenti possono aggiungere:
+nome supermercato;
+titolo offerta;
+link volantino;
+descrizione;
+categoria;
+scadenza opzionale.
+7.4 Struttura Firestore suggerita
+events/{eventId}/shoppingLinks/{linkId}
+  title
+  url
+  storeName
+  description
+  category
+  expiresAt
+  createdBy
+  createdByName
+  createdAt
+  updatedAt
+8. Costi & Scontrini con foto
+8.1 Obiettivo
+Migliorare la sezione costi permettendo di caricare la foto dello scontrino.
+8.2 Requisiti
+Ogni spesa deve supportare:
+descrizione;
+importo;
+utente che ha pagato;
+note;
+foto scontrino opzionale;
+anteprima miniatura;
+apertura anteprima grande;
+eliminazione/modifica da parte dell’autore o admin.
+8.3 Upload da mobile
+L’input file deve essere comodo da smartphone. L’utente deve poter:
+scattare una foto;
+scegliere una foto dalla galleria;
+vedere una preview prima o dopo il salvataggio.
+8.4 Anteprima scontrino
+Quando l’utente clicca su
+ 
+Apri scontrino
+:
+aprire modal fullscreen;
+mostrare immagine grande;
+pulsante chiudi ben visibile;
+layout adatto a mobile.
+8.5 Storage
+Usare Firebase Storage.
+Percorso suggerito:
+events/{eventId}/receipts/{expenseId}/{filename}
+8.6 Struttura Firestore suggerita
+events/{eventId}/expenses/{expenseId}
+  description
+  amount
+  paidBy
+  paidByName
+  receiptUrl
+  receiptPath
+  notes
+  createdBy
+  createdByName
+  createdAt
+  updatedAt
+9. Gestione quote e pagamenti
+9.1 Obiettivo
+La sezione spese deve diventare una vera gestione quote.
+Il sistema deve calcolare:
+totale spese;
+numero quote;
+quota singola;
+quanto ogni persona ha anticipato;
+quanto ogni persona deve pagare;
+quanto ogni persona deve ricevere;
+trasferimenti consigliati tra partecipanti.
+9.2 Principio fondamentale
+Il numero di quote non deve necessariamente coincidere con il numero reale di partecipanti loggati.
+Esempi:
+una coppia può valere 2 quote;
+un bambino può valere 0 quote;
+una persona può valere 0.5 quote;
+l’admin può impostare un numero totale quote manuale.
+9.3 Campo quote per partecipante
+Ogni partecipante deve avere:
+quoteCount
+Esempi:
+Giammario: 1
+Marco: 1
+Coppia Rossi: 2
+Bambino: 0
+Quota ridotta: 0.5
+9.4 Formula base
+Totale spese = somma di tutte le expenses.amount
+Totale quote = somma quoteCount dei partecipanti paganti
+Quota singola = Totale spese / Totale quote
+Quota dovuta utente = Quota singola × quoteCount utente
+Totale anticipato utente = somma expenses dove paidBy === userId
+Saldo utente = Totale anticipato utente - Quota dovuta utente
+9.5 Interpretazione saldo
+Saldo > 0 → utente deve ricevere soldi
+Saldo < 0 → utente deve pagare soldi
+Saldo = 0 → utente è in pari
+9.6 Esempio
+Totale spese:
+150 €
+Quote paganti:
+8
+Quota singola:
+18,75 €
+Spese anticipate:
+Marco: 80 €
+Luca: 70 €
+Se Marco e Luca hanno entrambi quotaCount = 1:
+Marco deve ricevere: 80 - 18,75 = 61,25 €
+Luca deve ricevere: 70 - 18,75 = 51,25 €
+Gli altri partecipanti con saldo negativo dovranno versare fino a compensare questi crediti.
+10. Override manuale delle quote
+L’admin deve poter scegliere tra due modalità:
+Modalità A — Quote per partecipante
+Il sistema usa la somma dei
+ 
+quoteCount
+ 
+dei partecipanti.
+Modalità B — Totale quote manuale
+L’admin imposta manualmente:
+manualTotalShares
+Se
+ 
+manualTotalShares
+ 
+è valorizzato, il sistema usa quello per calcolare la quota singola.
+Questa modalità serve quando l’admin vuole dividere per un numero stabilito, anche se i partecipanti registrati non sono allineati.
+11. Pagamenti consigliati
+11.1 Obiettivo
+Il sistema deve suggerire chi deve pagare chi.
+11.2 Input
+Lista utenti con:
+balance
+Dividere in:
+creditori = utenti con balance > 0
+debitori = utenti con balance < 0
+11.3 Output
+Generare una lista:
+[
+  { fromUserId, fromUserName, toUserId, toUserName, amount }
+]
+11.4 Algoritmo
+Ordinare debitori e creditori.
+Prendere il primo debitore.
+Abbinarlo al primo creditore disponibile.
+Generare trasferimento per l’importo minimo tra debito residuo e credito residuo.
+Aggiornare i residui.
+Continuare fino a saldo zero.
+Arrotondare a 2 decimali.
+11.5 UI
+Mostrare una sezione:
+Pagamenti consigliati
+Esempio:
+Anna → Marco: 18,75 €
+Paolo → Luca: 18,75 €
+Ogni riga può avere pulsante PayPal se disponibile.
+12. PayPal
+12.1 Strategia iniziale
+Non integrare API PayPal nella prima versione.
+Usare invece link PayPal configurabili, più semplici e open-source friendly.
+12.2 Campi partecipante
+Ogni partecipante può avere:
+paypalLink
+paypalEmail
+12.3 UI
+Se un partecipante deve ricevere soldi e ha
+ 
+paypalLink
+, mostrare:
+Paga con PayPal
+Il pulsante apre il link PayPal in una nuova scheda.
+12.4 Nota
+La gestione reale dello stato
+ 
+“pagato/non pagato”
+ 
+può essere implementata successivamente. Per ora il sistema deve suggerire i pagamenti e facilitare l’apertura del link.
+13. Foto evento e PDF ricordo post-evento
+13.1 Obiettivo
+A fine evento GrigliaTron deve trasformarsi anche in archivio/ricordo dell’esperienza.
+Quando l’evento viene concluso, il sistema deve notificare l’admin via email chiedendogli di caricare una
+ 
+foto evento ufficiale
+. Questa immagine diventerà:
+immagine principale dell’evento nella GUI;
+copertina del riepilogo post-evento;
+immagine principale del PDF ricordo.
+Il sistema deve poi generare un PDF ordinato, bello e leggibile con tutti i dati principali dell’evento.
+13.2 Flusso operativo
+Quando l’admin imposta lo stato evento su:
+concluso
+oppure quando la data evento è passata e l’admin conferma la chiusura, GrigliaTron deve:
+inviare una email all’admin;
+chiedere di caricare la foto evento;
+mostrare nella dashboard admin una card dedicata:
+Carica foto ricordo evento
+salvare la foto su Firebase Storage;
+aggiornare il documento evento con l’URL dell’immagine;
+usare la foto come immagine hero dell’evento;
+permettere la generazione/download del PDF ricordo.
+13.3 Email all’admin
+L’email deve essere inviata solo all’admin o agli admin evento.
+Oggetto suggerito:
+[GrigliaTron] Evento concluso: carica la foto ricordo
+Corpo email suggerito:
+L’evento “Grigliata in montagna” risulta concluso.
+Carica una foto ricordo: diventerà l’immagine principale dell’evento e verrà usata per generare il PDF riepilogativo.
+Se disponibile, includere link diretto alla pagina evento.
+13.4 Dati evento da aggiornare
+Nel documento evento aggiungere:
+coverImageUrl
+coverImagePath
+closedAt
+closedBy
+postEventPhotoRequested
+postEventPhotoUploadedAt
+pdfGeneratedAt
+pdfUrl
+pdfPath
+13.5 Firebase Storage
+Percorso suggerito per la foto evento:
+events/{eventId}/cover/event-cover.{ext}
+Percorso suggerito per il PDF:
+events/{eventId}/exports/event-summary.pdf
+13.6 GUI post-evento
+Quando l’evento è concluso, la Home deve mostrare una modalità post-evento.
+Per l’admin:
+Evento concluso
+Carica foto ricordo
+Genera PDF evento
+Per i partecipanti:
+Evento concluso
+Lascia una recensione
+Scarica il PDF ricordo, se disponibile
+Se la foto evento è presente, deve sostituire o arricchire l’immagine hero dell’evento.
+13.7 PDF ricordo evento
+Il PDF deve essere pulito, strutturato e gradevole. Non deve sembrare un export grezzo.
+Contenuti consigliati:
+Copertina
+nome evento;
+data;
+luogo;
+foto evento;
+logo/nome GrigliaTron.
+Riepilogo evento
+tipo evento;
+descrizione;
+data e orario;
+luogo;
+numero partecipanti;
+numero quote;
+totale spese.
+Partecipanti
+elenco partecipanti;
+stato partecipazione;
+eventuali quoteCount.
+Cibo & Bevande
+elementi portati/comprati;
+chi ci ha pensato;
+stato completamento.
+Attrezzatura & Cose utili
+elementi;
+responsabili;
+stato.
+Cose da fare
+task principali;
+responsabili;
+stato.
+Spese e quote
+totale spese;
+spese per persona;
+quota singola;
+saldi finali;
+eventuali pagamenti consigliati.
+Sondaggi
+domande principali;
+risultati finali;
+opzioni vincenti.
+Aggiornamenti importanti
+aggiornamenti marcati come importante o urgente.
+Recensioni post-evento
+commenti dei partecipanti;
+voti;
+eventuale citazione migliore.
+Chiusura
+breve frase finale;
+data generazione PDF.
+13.8 Generazione PDF
+Per la prima versione si può generare il PDF lato client usando librerie come:
+html2canvas + jsPDF
+oppure generare una pagina HTML di riepilogo ottimizzata per stampa e usare:
+window.print()
+Per una versione più robusta futura, valutare una Cloud Function che genera il PDF lato server.
+13.9 Requisiti UX
+Il PDF deve essere:
+leggibile;
+bello da condividere;
+non troppo tecnico;
+adatto come ricordo;
+esportabile con un click;
+scaricabile da admin e partecipanti, se abilitato.
+13.10 Permessi
+Admin:
+carica/modifica foto evento;
+genera PDF;
+rigenera PDF;
+elimina PDF;
+decide se renderlo visibile ai partecipanti.
+Partecipante:
+vede foto evento;
+scarica PDF se disponibile e visibile;
+lascia recensione post-evento.
+14. Notifiche email per aggiornamenti evento
+15.1 Obiettivo
+Quando viene pubblicato un aggiornamento importante o urgente nella sezione Aggiornamenti, i partecipanti devono poter ricevere una notifica email.
+Gli utenti hanno effettuato login con Google, quindi l’app conosce la loro email.
+14.2 Principio di sicurezza
+Non inviare email direttamente dal frontend tramite API private.
+La soluzione consigliata è usare un sistema backend sicuro, preferibilmente:
+Firebase Extension: Trigger Email from Firestore
+oppure, in alternativa futura:
+Cloud Function dedicata
+14.3 UX aggiornamenti
+Nella form Aggiornamenti aggiungere:
+testo aggiornamento;
+tipo aggiornamento:
+info;
+importante;
+urgente;
+checkbox:
+Notifica i partecipanti via email.
+Regole:
+default: checkbox disattivata;
+se tipo = urgente, checkbox attivata automaticamente;
+se le notifiche email non sono configurate, checkbox disabilitata con tooltip.
+14.4 Struttura update
+events/{eventId}/updates/{updateId}
+  text
+  type: "info" | "important" | "urgent"
+  notifyByEmail
+  emailNotificationStatus: "not_requested" | "queued" | "sent" | "failed"
+  authorId
+  authorName
+  authorEmail
+  createdAt
+14.5 Invio email con collection mail
+Quando
+ 
+notifyByEmail
+ 
+è true, il sistema deve creare un documento in:
+mail/{mailId}
+Formato compatibile con Firebase Trigger Email extension:
+mail/{mailId}
+  to: []
+  message:
+    subject
+    text
+    html
+Esempio:
+{
+  
+"to"
+:
+ 
+[
+"utente1@gmail.com"
+,
+ 
+"utente2@gmail.com"
+]
+,
+  
+"message"
+:
+ 
+{
+    
+"subject"
+:
+ 
+"[GrigliaTron] Aggiornamento urgente - Grigliata in montagna"
+,
+    
+"text"
+:
+ 
+"Giammario ha pubblicato un aggiornamento: Ritrovo alle 9:30."
+,
+    
+"html"
+:
+ 
+"<p><strong>Giammario</strong> ha pubblicato un aggiornamento:</p><p>Ritrovo alle 9:30.</p>"
+  
+}
+}
+14.6 Destinatari
+Recuperare le email da:
+events/{eventId}/participants
+Ogni partecipante deve avere:
+email
+notificationPreferences
+Prevedere in futuro la possibilità di disattivare notifiche.
+14.7 Configurazione
+Aggiungere variabile:
+VITE_EMAIL_NOTIFICATIONS_ENABLED=true
+Se assente o false:
+non mostrare invio email attivo;
+mostrare tooltip
+ 
+“Notifiche email non configurate”
+.
+14.8 README
+Documentare:
+installazione Firebase Extension Trigger Email from Firestore;
+configurazione SMTP;
+collection usata:
+ 
+mail
+;
+esempio documento;
+note di sicurezza;
+limiti della funzione.
+15. Open source readiness
+14.1 Obiettivo
+Preparare GrigliaTron per pubblicazione su GitHub come progetto open source.
+15.2 Regole
+Prima della pubblicazione:
+rimuovere dati reali;
+rimuovere nomi partecipanti reali;
+rimuovere eventi reali;
+rimuovere credenziali;
+rimuovere configurazioni personali;
+rendere admin email configurabile da
+ 
+.env
+;
+fornire evento demo generico;
+assicurarsi che
+ 
+.env
+ 
+sia in
+ 
+.gitignore
+.
+15.3 File richiesti
+README.md
+LICENSE
+.env.example
+.gitignore
+netlify.toml
+firebase/firestore.rules
+firebase/storage.rules
+docs/roadmap.md
+docs/screenshots/
+CONTRIBUTING.md opzionale
+15.4 Licenza
+Licenza consigliata:
+MIT License
+15.5 Nome repository
+Opzioni:
+grigliatron
+oppure:
+grigliatron-event-planner
+15.6 Descrizione progetto
+Descrizione breve:
+GrigliaTron is a lightweight open-source collaborative event planner for friends, small groups and informal gatherings.
+Descrizione italiana:
+GrigliaTron è un gestionale collaborativo leggero per organizzare eventi informali tra amici: grigliate, cene, compleanni, uscite e piccoli ritrovi.
+16. Roadmap consigliata
+Non implementare tutto in un unico intervento. La versione attuale funziona ed è stata validata, quindi bisogna evolverla senza romperla.
+Milestone 1 — GrigliaTron v1.1: UX mobile e permessi base
+Priorità massima.
+Implementare:
+Home compatta;
+bottom navigation mobile;
+sezioni apribili;
+riepilogo personale utente;
+card con badge e mini stato;
+modifica/cancellazione dei propri elementi;
+admin può gestire tutto;
+miglioramento layout desktop senza dashboard infinita.
+Milestone 2 — GrigliaTron v1.2: Sondaggi e offerte
+Implementare:
+sezione Sondaggi;
+voto singolo/multiplo;
+chiusura sondaggio;
+risultati;
+trasformazione opzione vincente in item;
+sezione link volantini/offerte supermercati.
+Milestone 3 — GrigliaTron v1.3: Spese avanzate
+Implementare:
+upload foto scontrino;
+anteprima scontrino;
+Firebase Storage;
+gestione spese migliorata;
+quote per partecipante;
+totale quote manuale;
+quota singola;
+saldi utenti;
+pagamenti consigliati;
+link PayPal.
+Milestone 4 — GrigliaTron v1.4: Notifiche
+Implementare:
+aggiornamenti info/importante/urgente;
+checkbox notifica email;
+predisposizione collection
+ 
+mail
+;
+documentazione Firebase Trigger Email extension;
+stato notifica;
+preferenze notifica utente.
+Milestone 5 — GrigliaTron v2.0: Open source release
+Implementare:
+pulizia dati reali;
+README completo;
+LICENSE MIT;
+docs roadmap;
+screenshots;
+demo mode;
+evento demo;
+configurazione guidata;
+controllo sicurezza Firestore/Storage;
+pubblicazione GitHub.
+17. Priorità tecnica immediata
+La prossima attività da assegnare allo sviluppatore AI deve essere limitata e controllata.
+Prompt operativo consigliato per il prossimo ciclo
+Implementa GrigliaTron v1.1 concentrandoti solo su UX mobile-first e permessi utente.
+Obiettivi:
+1. Eliminare la dashboard mobile infinita.
+2. Creare Home compatta con riepilogo evento, riepilogo personale e card sezioni.
+3. Aggiungere bottom navigation mobile con tab: Home, Liste, Sondaggi, Spese, Info.
+4. Spostare le sezioni attuali dentro le tab corrette.
+5. Ogni card deve mostrare mini stato e badge numerico.
+6. Implementare modifica/cancellazione degli elementi creati dall’utente.
+7. Admin può modificare/cancellare tutto.
+8. Non implementare ancora sondaggi, quote avanzate, scontrini foto o notifiche email: lasciare solo placeholder se necessario.
+9. Non rompere Firebase Auth, Firestore e dati esistenti.
+10. Verificare build locale e deploy Netlify.
+Output richiesto:
+- elenco file modificati;
+- spiegazione sintetica della nuova navigazione;
+- conferma build `npm run build` riuscita;
+- eventuali migrazioni dati necessarie.
+18. Note di qualità
+Ogni implementazione deve rispettare questi principi:
+mobile-first;
+nessuna funzione deve rendere la Home confusa;
+le funzioni avanzate devono stare in sezioni dedicate;
+i dati devono rimanere sincronizzati via Firestore;
+nessun dato sensibile nel codice;
+ogni nuova funzione deve essere modulare;
+UI semplice, leggibile, con pulsanti grandi;
+evitare testi tecnici per l’utente finale;
+mantenere il tono visivo premium ma leggero;
+preservare l’identità
+ 
+“Tron”
+ 
+senza rendere l’app pesante.
+19. Stato finale desiderato
+GrigliaTron deve diventare una piccola piattaforma open source per eventi informali, con una UX così semplice che anche un gruppo di amici non tecnici possa usarla senza spiegazioni.
+Il valore principale non è avere tante funzioni, ma coordinare un gruppo senza caos:
+niente messaggi persi su WhatsApp;
+niente doppioni nella spesa;
+responsabilità chiare;
+quote trasparenti;
+aggiornamenti importanti notificabili;
+organizzazione semplice;
+riuso per eventi futuri;
+codice pubblicabile e migliorabile dalla community.
+
+      
+
+        
+                
+        
