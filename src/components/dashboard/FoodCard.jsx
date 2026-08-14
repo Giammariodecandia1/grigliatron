@@ -12,8 +12,7 @@ const FOOD_CATEGORIES = ['Carne', 'Pane', 'Verdure', 'Bevande', 'Dolci', 'Condim
  * Card Cibo & Bevande.
  */
 export default function FoodCard() {
-  const { user } = useAuth();
-  const { event, foodItems, addItem } = useEvent();
+  const { event, foodItems, addItem, currentUser: user } = useEvent();
   const theme = getTheme(event?.theme || event?.type);
 
   if (!event) return null;

@@ -10,8 +10,7 @@ import { getTheme } from '../../config/themes';
  * Card Attrezzatura & Cose utili.
  */
 export default function GearCard() {
-  const { user } = useAuth();
-  const { event, gearItems, addItem } = useEvent();
+  const { event, gearItems, addItem, currentUser: user } = useEvent();
   const theme = getTheme(event?.theme || event?.type);
 
   if (!event) return null;

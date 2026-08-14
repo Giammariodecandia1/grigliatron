@@ -126,7 +126,7 @@ export function EventProvider({ eventId, currentUser, children }) {
     await deleteDoc(doc(db, 'events', eventId, 'participants', userId));
   }, [eventId]);
 
-  const addGuestParticipant = useCallback(async (name) => {
+  const addGuestParticipant = useCallback(async (name, quoteCount = 1) => {
     if (!eventId) return;
     // Genera un ID univoco per il guest (es: guest_16843..._a1b2c)
     const guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
@@ -135,7 +135,7 @@ export function EventProvider({ eventId, currentUser, children }) {
       name: name,
       status: 'partecipo',
       isGuest: true,
-      quoteCount: 1,
+      quoteCount: quoteCount,
       joinedAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -452,6 +452,7 @@ export function EventProvider({ eventId, currentUser, children }) {
     event,
     eventId,
     loading,
+    currentUser,
     isEventAdmin,
     participants,
     foodItems,

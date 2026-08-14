@@ -13,9 +13,7 @@ import { useEvent } from '../../contexts/EventContext';
  * @param {{ items, subCollection, showCategory, showPriority }} props
  */
 export default function ItemList({ items, subCollection, showCategory = false, showPriority = false }) {
-  const { user } = useAuth();
-  const { isEventAdmin } = useEvent();
-  const { participants, claimItem, releaseItem, completeItem, deleteItem, updateItem } = useEvent();
+  const { currentUser: user, isEventAdmin, participants, claimItem, releaseItem, completeItem, deleteItem, updateItem } = useEvent();
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [assigningId, setAssigningId] = useState(null); // ID dell'item in fase di ri-assegnazione
@@ -119,9 +117,11 @@ export default function ItemList({ items, subCollection, showCategory = false, s
     return null;
   }
 
+  const sortedItems = [...items].sort((a, b) => (a.name || a.title || '').localeCompare(b.name || b.title || ''));
+
   return (
     <ul className="item-list">
-      {items.map((item) => {
+      {sortedItems.map((item) => {
         const volunteers = getVolunteers(item);
         const iAmVolunteer = isVolunteer(item);
         const isFree = !item.status || item.status === 'free';
@@ -193,7 +193,7 @@ export default function ItemList({ items, subCollection, showCategory = false, s
 
             <div className="item-info">
               <div className="item-name-row">
-                <span className={`item-name ${isCompleted ? 'strikethrough' : ''}`}>
+                <span className="item-name">
                   {item.name || item.title}
                 </span>
                 {showPriority && item.priority === 'important' && (
@@ -215,7 +215,7 @@ export default function ItemList({ items, subCollection, showCategory = false, s
               )}
 
               {/* Mostra tutti i volontari */}
-              {hasVolunteers && !isCompleted && (
+              {hasVolunteers && (
                 <div className="item-volunteers">
                   <span className="item-volunteers-label">
                     {volunteers.length === 1 ? 'Ci pensa:' : `Ci pensano in ${volunteers.length}:`}

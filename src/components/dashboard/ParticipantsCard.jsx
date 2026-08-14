@@ -16,6 +16,7 @@ export default function ParticipantsCard() {
   const [noteText, setNoteText] = useState('');
   const [showGuestForm, setShowGuestForm] = useState(false);
   const [guestName, setGuestName] = useState('');
+  const [guestQuote, setGuestQuote] = useState(true);
 
   if (!event) return null;
 
@@ -49,8 +50,9 @@ export default function ParticipantsCard() {
 
   const handleAddGuest = async () => {
     if (!guestName.trim()) return;
-    await addGuestParticipant(guestName.trim());
+    await addGuestParticipant(guestName.trim(), guestQuote ? 1 : 0);
     setGuestName('');
+    setGuestQuote(true);
     setShowGuestForm(false);
   };
 
@@ -270,24 +272,34 @@ export default function ParticipantsCard() {
         </div>
       )}
 
-      {/* Admin: Aggiungi Guest */}
-      {isEventAdmin && (
+      {/* Aggiungi +1 (Ospite/Bambino) - per tutti i loggati/ospiti */}
+      {user && (
         <div className="admin-add-guest" style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
           {!showGuestForm ? (
             <button className="btn btn-ghost btn-sm" onClick={() => setShowGuestForm(true)}>
-              + Aggiungi ospite (senza login)
+              + Aggiungi un +1 (es. bambino o partner)
             </button>
           ) : (
-            <div className="note-input-row">
-              <input
-                className="input input-sm"
-                value={guestName}
-                onChange={e => setGuestName(e.target.value)}
-                placeholder="Nome ospite"
-                autoFocus
-              />
-              <button className="btn btn-primary btn-sm" onClick={handleAddGuest}>Aggiungi</button>
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowGuestForm(false)}>✕</button>
+            <div className="guest-add-form" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div className="note-input-row">
+                <input
+                  className="input input-sm"
+                  value={guestName}
+                  onChange={e => setGuestName(e.target.value)}
+                  placeholder="Nome del +1"
+                  autoFocus
+                />
+                <button className="btn btn-primary btn-sm" onClick={handleAddGuest}>Aggiungi</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setShowGuestForm(false)}>✕</button>
+              </div>
+              <label style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="checkbox"
+                  checked={guestQuote}
+                  onChange={e => setGuestQuote(e.target.checked)}
+                />
+                Partecipa alla divisione delle spese (Quota intera)
+              </label>
             </div>
           )}
         </div>

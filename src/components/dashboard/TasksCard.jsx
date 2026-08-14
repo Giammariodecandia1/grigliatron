@@ -10,8 +10,7 @@ import { getTheme } from '../../config/themes';
  * Card Cose da fare (tasks).
  */
 export default function TasksCard() {
-  const { user } = useAuth();
-  const { event, tasks, addItem } = useEvent();
+  const { event, tasks, addItem, currentUser: user } = useEvent();
   const theme = getTheme(event?.theme || event?.type);
 
   if (!event) return null;
