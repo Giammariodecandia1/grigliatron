@@ -72,8 +72,11 @@ GrigliaTron è una web app **self-hosted** e **multi-evento** che trasforma l'or
 
 ## 📸 Screenshot
 
-<!-- Inserisci qui screenshot della tua istanza quando disponibili -->
-> 🖼️ *Screenshot disponibili dopo la creazione del primo evento. Pubblica la tua copia per vederne l'aspetto reale!*
+<p cascade align="center">
+  <img src="docs/screenshots/loading.jpg" width="250" alt="GrigliaTron Loading Screen" />
+  <img src="docs/screenshots/home-cover.jpg" width="250" alt="GrigliaTron Home Event Cover" />
+  <img src="docs/screenshots/post-event.jpg" width="250" alt="GrigliaTron Evento Concluso" />
+</p>
 
 ---
 
