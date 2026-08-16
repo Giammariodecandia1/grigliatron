@@ -38,11 +38,12 @@ GrigliaTron è una web app **self-hosted** e **multi-evento** che trasforma l'or
 
 *   **Self-Hosted & Gratuito**: Lo ospiti sul tuo account Firebase/Netlify a costo zero.
 *   **Multi-Evento**: Organizza quante grigliate vuoi dalla stessa dashboard.
-*   **Gestione Ospiti (No-Login)**: Chi non vuole usare Google può accedere come "Ospite" tramite un link condiviso.
+*   **Guest Access (No-Login)**: Chi non vuole usare Google può accedere come "Ospite" tramite un link condiviso.
 *   **Liste collaborative in tempo reale**: Cibo, bevande, attrezzatura. Basta cliccare "Ci penso io!".
-*   **Sondaggi**: Per decidere data o location senza intasare la chat.
-*   **Divisione Spese intelligente**: Calcolo automatico di "Chi deve a Chi" e supporto quote parziali.
-*   **Archivio Foto & PDF**: Genera un report PDF dell'evento con scontrini e foto di copertina.
+*   **Divisione Spese intelligente**: Calcolo automatico di "Chi deve a Chi", supporto quote parziali e gestione **Pagamenti Saldati**.
+*   **Sondaggi & Feedback**: Vota data o location e raccogli idee o segnalazioni bug dai partecipanti.
+*   **Copertine e Temi dinamici**: Carica una foto ricordo o personalizza la **palette colori** per distinguere eventi simili.
+*   **Archivio Foto & PDF**: Genera un report PDF dell'evento con scontrini (caricabili anche da galleria) e foto ricordo.
 *   **Mobile-First**: Si usa da smartphone, proprio come una vera app.
 
 ---
@@ -194,8 +195,10 @@ Se vuoi modificare il codice di GrigliaTron sul tuo PC:
 - [x] Report PDF post-evento
 - [x] Guida setup per non tecnici
 - [x] Pagina launcher/setup interattiva
+- [x] Temi e palette personalizzabili da UI (v2.0)
+- [x] Sistema di Feedback in-app (v2.0)
+- [x] Segnare pagamenti come saldati con note (v2.0)
 - [ ] Notifiche push (opzionale)
-- [ ] Temi personalizzabili da UI
 - [ ] Export/import eventi
 - [ ] PWA (installabile come app)
 - [ ] Localizzazione multilingua
