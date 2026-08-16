@@ -15,9 +15,11 @@ import { calculateExpenses } from '../../utils/expenseCalculator';
 export default function QuotesCard() {
   const { user } = useAuth();
   const { isEventAdmin } = useEvent();
-  const { event, participants, expenses, updateEvent } = useEvent();
+  const { event, participants, expenses, updateEvent, settlePayment, currentUser } = useEvent();
   const [editingManualShares, setEditingManualShares] = useState(false);
   const [manualSharesInput, setManualSharesInput] = useState('');
+  const [settlingPaymentIndex, setSettlingPaymentIndex] = useState(null);
+  const [settleNote, setSettleNote] = useState('');
 
   if (!event || expenses.length === 0) return null;
 
@@ -108,28 +110,86 @@ export default function QuotesCard() {
         <div className="quotes-payments">
           <h4 className="quotes-section-title">💸 Chi deve pagare chi</h4>
           <div className="quotes-payment-list">
-            {suggestedPayments.map((p, idx) => (
-              <div key={idx} className="quotes-payment-row">
-                <div className="quotes-payment-flow">
-                  <span className="quotes-payment-from">{p.fromUserName}</span>
-                  <span className="quotes-payment-arrow">deve dare</span>
-                  <strong className="quotes-payment-amount">{formatCurrency(p.amount)}</strong>
-                  <span className="quotes-payment-arrow">a</span>
-                  <span className="quotes-payment-to">{p.toUserName}</span>
+            {suggestedPayments.map((p, idx) => {
+              const settled = (event.settledPayments || []).find(s => s.fromUserId === p.fromUserId && s.toUserId === p.toUserId);
+              const isSettled = !!settled;
+
+              return (
+                <div key={idx} className={`quotes-payment-row ${isSettled ? 'quotes-payment-settled' : ''}`}>
+                  <div className="quotes-payment-flow">
+                    <span className="quotes-payment-from">{p.fromUserName}</span>
+                    <span className="quotes-payment-arrow">deve dare</span>
+                    <strong className="quotes-payment-amount" style={{ textDecoration: isSettled ? 'line-through' : 'none' }}>
+                      {formatCurrency(p.amount)}
+                    </strong>
+                    <span className="quotes-payment-arrow">a</span>
+                    <span className="quotes-payment-to">{p.toUserName}</span>
+                  </div>
+                  
+                  {isSettled ? (
+                    <div className="quotes-settled-info" style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--success)' }}>
+                      ✅ Saldato {settled.note && ` — Note: ${settled.note}`}
+                    </div>
+                  ) : (
+                    <div className="quotes-payment-actions" style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      {p.paypalLink && (
+                        <a
+                          href={p.paypalLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn btn-sm btn-paypal"
+                          title="Paga con PayPal"
+                        >
+                          💳 Paga
+                        </a>
+                      )}
+                      
+                      {settlingPaymentIndex === idx ? (
+                        <div className="quotes-settle-form" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                          <input
+                            className="input input-sm"
+                            placeholder="Note (es. 'Pagato in contanti')"
+                            value={settleNote}
+                            onChange={e => setSettleNote(e.target.value)}
+                          />
+                          <button 
+                            className="btn btn-primary btn-sm"
+                            onClick={async () => {
+                              await settlePayment({
+                                fromUserId: p.fromUserId,
+                                toUserId: p.toUserId,
+                                amount: p.amount,
+                                note: settleNote.trim(),
+                              });
+                              setSettlingPaymentIndex(null);
+                              setSettleNote('');
+                            }}
+                          >
+                            Conferma
+                          </button>
+                          <button 
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => {
+                              setSettlingPaymentIndex(null);
+                              setSettleNote('');
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <button 
+                          className="btn btn-outline btn-sm" 
+                          onClick={() => setSettlingPaymentIndex(idx)}
+                        >
+                          ✅ Segna saldato
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
-                {p.paypalLink && (
-                  <a
-                    href={p.paypalLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-sm btn-paypal"
-                    title="Paga con PayPal"
-                  >
-                    💳 Paga con PayPal
-                  </a>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

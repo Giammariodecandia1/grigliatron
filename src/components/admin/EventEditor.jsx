@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEvent } from '../../contexts/EventContext';
 import Modal from '../shared/Modal';
-import { getThemeList } from '../../config/themes';
+import { getThemeList, getPaletteList } from '../../config/themes';
 import { getTemplateList } from '../../config/templates';
 import { seedEvent } from '../../utils/seedData';
 
@@ -38,6 +38,7 @@ export default function EventEditor() {
       time: event.time || '',
       description: event.description || '',
       theme: event.theme || event.type || 'grigliata',
+      colorPalette: event.colorPalette || 'default',
       status: event.status || 'open',
       latitude: event.latitude || '',
       longitude: event.longitude || '',
@@ -86,6 +87,7 @@ export default function EventEditor() {
 
   const themeList = getThemeList();
   const templateList = getTemplateList();
+  const paletteList = getPaletteList();
 
   return (
     <>
@@ -143,12 +145,40 @@ export default function EventEditor() {
           </label>
 
           <label className="form-label">
-            Tema grafico
+            Tema grafico (Icone e Stile)
             <select className="input" value={form.theme} onChange={e => setForm({ ...form, theme: e.target.value })}>
               {themeList.map(t => (
                 <option key={t.id} value={t.id}>{t.emoji} {t.label}</option>
               ))}
             </select>
+          </label>
+
+          <label className="form-label">
+            Palette Colori (opzionale)
+            <div className="palette-selector" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+              {paletteList.map(p => (
+                <div
+                  key={p.id}
+                  onClick={() => setForm({ ...form, colorPalette: p.id })}
+                  className={`palette-circle ${form.colorPalette === p.id ? 'selected' : ''}`}
+                  title={p.label}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: p.gradient || 'var(--bg-secondary)',
+                    border: form.colorPalette === p.id ? '2px solid var(--text-main)' : '2px solid transparent',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px'
+                  }}
+                >
+                  {p.id === 'default' ? '🚫' : ''}
+                </div>
+              ))}
+            </div>
           </label>
 
           <div className="form-row">

@@ -2,6 +2,7 @@ import InviteCard from '../dashboard/InviteCard';
 import LocationCard from '../dashboard/LocationCard';
 import WeatherCard from '../dashboard/WeatherCard';
 import UpdatesCard from '../dashboard/UpdatesCard';
+import FeedbackCard from '../dashboard/FeedbackCard';
 import ReviewsCard from '../dashboard/ReviewsCard';
 import ParticipantsCard from '../dashboard/ParticipantsCard';
 
@@ -16,6 +17,7 @@ export default function InfoTab() {
       <LocationCard />
       <WeatherCard />
       <UpdatesCard />
+      <FeedbackCard />
       <ReviewsCard />
     </div>
   );

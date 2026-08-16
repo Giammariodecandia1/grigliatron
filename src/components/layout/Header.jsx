@@ -25,7 +25,7 @@ export default function Header({ onNavigate }) {
   const [toast, setToast] = useState(null);
   const shareRef = useRef(null);
 
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
 
   // Close dropdown on outside click
   useEffect(() => {

@@ -150,12 +150,40 @@ const themes = {
   },
 };
 
-export function getTheme(eventType) {
-  return themes[eventType] || themes.uscita;
+export const colorPalettes = {
+  default: { id: 'default', label: 'Predefinito (da tema)', gradient: null, accent: null, gradientSubtle: null, accentLight: null },
+  sunset: { id: 'sunset', label: 'Tramonto', gradient: 'linear-gradient(135deg, #FF512F 0%, #DD2476 100%)', accent: '#FF512F', gradientSubtle: 'linear-gradient(135deg, rgba(255,81,47,0.15) 0%, rgba(221,36,118,0.10) 100%)', accentLight: 'rgba(255,81,47,0.15)' },
+  ocean: { id: 'ocean', label: 'Oceano', gradient: 'linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%)', accent: '#2193b0', gradientSubtle: 'linear-gradient(135deg, rgba(33,147,176,0.15) 0%, rgba(109,213,237,0.10) 100%)', accentLight: 'rgba(33,147,176,0.15)' },
+  forest: { id: 'forest', label: 'Foresta', gradient: 'linear-gradient(135deg, #134E5E 0%, #71B280 100%)', accent: '#71B280', gradientSubtle: 'linear-gradient(135deg, rgba(19,78,94,0.15) 0%, rgba(113,178,128,0.10) 100%)', accentLight: 'rgba(113,178,128,0.15)' },
+  neon: { id: 'neon', label: 'Neon Night', gradient: 'linear-gradient(135deg, #8A2387 0%, #E94057 50%, #F27121 100%)', accent: '#E94057', gradientSubtle: 'linear-gradient(135deg, rgba(138,35,135,0.15) 0%, rgba(242,113,33,0.10) 100%)', accentLight: 'rgba(233,64,87,0.15)' },
+  wine: { id: 'wine', label: 'Vino Rosso', gradient: 'linear-gradient(135deg, #4b134f 0%, #c94b4b 100%)', accent: '#c94b4b', gradientSubtle: 'linear-gradient(135deg, rgba(75,19,79,0.15) 0%, rgba(201,75,75,0.10) 100%)', accentLight: 'rgba(201,75,75,0.15)' },
+  ice: { id: 'ice', label: 'Ghiaccio', gradient: 'linear-gradient(135deg, #E0EAFC 0%, #CFDEF3 100%)', accent: '#789DCA', gradientSubtle: 'linear-gradient(135deg, rgba(224,234,252,0.4) 0%, rgba(207,222,243,0.4) 100%)', accentLight: 'rgba(120,157,202,0.15)' },
+  midnight: { id: 'midnight', label: 'Mezzanotte', gradient: 'linear-gradient(135deg, #232526 0%, #414345 100%)', accent: '#414345', gradientSubtle: 'linear-gradient(135deg, rgba(35,37,38,0.15) 0%, rgba(65,67,69,0.10) 100%)', accentLight: 'rgba(65,67,69,0.15)' },
+  gold: { id: 'gold', label: 'Oro', gradient: 'linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #B38728 100%)', accent: '#BF953F', gradientSubtle: 'linear-gradient(135deg, rgba(191,149,63,0.15) 0%, rgba(179,135,40,0.10) 100%)', accentLight: 'rgba(191,149,63,0.15)' },
+  candy: { id: 'candy', label: 'Caramella', gradient: 'linear-gradient(135deg, #f953c6 0%, #b91d73 100%)', accent: '#f953c6', gradientSubtle: 'linear-gradient(135deg, rgba(249,83,198,0.15) 0%, rgba(185,29,115,0.10) 100%)', accentLight: 'rgba(249,83,198,0.15)' },
+};
+
+export function getTheme(eventType, colorPaletteId = null) {
+  const baseTheme = themes[eventType] || themes.uscita;
+  if (colorPaletteId && colorPalettes[colorPaletteId] && colorPaletteId !== 'default') {
+    const palette = colorPalettes[colorPaletteId];
+    return {
+      ...baseTheme,
+      gradient: palette.gradient,
+      gradientSubtle: palette.gradientSubtle,
+      accent: palette.accent,
+      accentLight: palette.accentLight,
+    };
+  }
+  return baseTheme;
 }
 
 export function getThemeList() {
   return Object.values(themes).map(t => ({ id: t.id, label: t.label, emoji: t.headerEmoji }));
+}
+
+export function getPaletteList() {
+  return Object.values(colorPalettes);
 }
 
 export default themes;

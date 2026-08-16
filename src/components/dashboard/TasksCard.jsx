@@ -11,7 +11,7 @@ import { getTheme } from '../../config/themes';
  */
 export default function TasksCard() {
   const { event, tasks, addItem, currentUser: user } = useEvent();
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
 
   if (!event) return null;
 

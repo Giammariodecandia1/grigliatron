@@ -5,6 +5,9 @@ import { getTheme } from '../../config/themes';
 import { formatDateWithDay } from '../../utils/formatters';
 import { getInitials } from '../../utils/formatters';
 import { useWeather } from '../../hooks/useWeather';
+import { compressImage } from '../../utils/imageCompressor';
+import Footer from '../layout/Footer';
+import { useState, useRef } from 'react';
 
 /**
  * HomeTab — Centro di comando compatto.
@@ -13,12 +16,30 @@ import { useWeather } from '../../hooks/useWeather';
  */
 export default function HomeTab({ onNavigate }) {
   const { user } = useAuth();
-  const { event, participants, foodItems, gearItems, tasks, expenses, updates, reviews, polls } = useEvent();
+  const { event, participants, foodItems, gearItems, tasks, expenses, updates, reviews, polls, uploadCoverImage, isEventAdmin } = useEvent();
   const countdown = useCountdown(event?.date, event?.time);
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
   const { weather } = useWeather(event?.latitude, event?.longitude, event?.date);
+  
+  const [loadingMsg, setLoadingMsg] = useState('');
+  const fileInputRef = useRef(null);
 
   if (!event) return null;
+
+  const handleCoverSelect = async (file) => {
+    if (!file) return;
+    setLoadingMsg('Caricamento foto...');
+    try {
+      const { blob } = await compressImage(file, setLoadingMsg);
+      await uploadCoverImage(blob);
+      setLoadingMsg('');
+    } catch (err) {
+      console.error(err);
+      alert('Errore caricamento foto.');
+      setLoadingMsg('');
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   // ─── Dati riepilogo personale ──────────────────────────────────
   const myItemsClaimed = user ? [
@@ -169,12 +190,49 @@ export default function HomeTab({ onNavigate }) {
     <div className="home-tab">
 
       {/* ─── Hero compatto ────────────────────────────────────────── */}
-      <div className="home-hero" style={{ background: theme.gradientSubtle }}>
+      <div 
+        className="home-hero" 
+        style={{ 
+          background: event.coverImageUrl 
+            ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${event.coverImageUrl}) center/cover no-repeat` 
+            : theme.gradientSubtle,
+          color: event.coverImageUrl ? '#fff' : 'inherit'
+        }}
+      >
         <div className="home-hero-info">
-          <span className="home-hero-emoji">{theme.headerEmoji}</span>
+          <span className="home-hero-emoji" style={{ position: 'relative' }}>
+            {theme.headerEmoji}
+            
+            <label 
+              className="cover-upload-btn" 
+              style={{
+                position: 'absolute', bottom: '-5px', right: '-5px', 
+                background: 'var(--bg-primary)', borderRadius: '50%', 
+                width: '24px', height: '24px', display: 'flex', 
+                alignItems: 'center', justifyContent: 'center', 
+                cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                fontSize: '12px', zIndex: 2
+              }}
+              title="Cambia immagine di copertina"
+            >
+              📷
+              <input
+                type="file"
+                accept="image/*"
+                className="input-file-hidden"
+                ref={fileInputRef}
+                onChange={e => handleCoverSelect(e.target.files[0])}
+                disabled={!!loadingMsg}
+                style={{ display: 'none' }}
+              />
+            </label>
+          </span>
           <div>
-            <h2 className="home-hero-title">{event.title}</h2>
-            <p className="home-hero-meta">
+            <h2 className="home-hero-title" style={{ color: event.coverImageUrl ? '#fff' : 'inherit' }}>
+              {event.title}
+              {loadingMsg && <span style={{ fontSize: '0.8rem', marginLeft: '0.5rem', fontWeight: 'normal', opacity: 0.8 }}>⏳ {loadingMsg}</span>}
+            </h2>
+            <p className="home-hero-meta" style={{ color: event.coverImageUrl ? 'rgba(255,255,255,0.8)' : 'inherit' }}>
               {formatDateWithDay(event.date)}
               {event.time && ` — ${event.time}`}
               {event.locationName && ` — ${event.locationName}`}
@@ -302,6 +360,8 @@ export default function HomeTab({ onNavigate }) {
           <span className="home-missing-arrow">→</span>
         </div>
       )}
+
+      <Footer />
     </div>
   );
 }

@@ -11,7 +11,7 @@ import { getInitials } from '../../utils/formatters';
 export default function ParticipantsCard() {
   const { user } = useAuth();
   const { event, isEventAdmin, participants, joinEvent, updateParticipant, removeParticipant, addGuestParticipant, foodItems, gearItems, tasks, updateEvent } = useEvent();
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [showGuestForm, setShowGuestForm] = useState(false);

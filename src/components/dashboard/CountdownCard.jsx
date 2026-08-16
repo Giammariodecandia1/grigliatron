@@ -9,7 +9,7 @@ import { getTheme } from '../../config/themes';
 export default function CountdownCard() {
   const { event } = useEvent();
   const countdown = useCountdown(event?.date, event?.time);
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
 
   if (!event) return null;
 

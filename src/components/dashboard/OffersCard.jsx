@@ -12,7 +12,7 @@ export default function OffersCard() {
   const { user } = useAuth();
   const { isEventAdmin } = useEvent();
   const { event, shoppingLinks, addShoppingLink, deleteShoppingLink, updateShoppingLink } = useEvent();
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: '', storeName: '', url: '' });
   const [editingId, setEditingId] = useState(null);

@@ -9,7 +9,7 @@ import { formatDateWithDay } from '../../utils/formatters';
  */
 export default function WeatherCard() {
   const { event } = useEvent();
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
 
   const { weather, loading, error } = useWeather(
     event?.latitude,

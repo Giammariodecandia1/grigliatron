@@ -146,7 +146,7 @@ export default function MyEventsPage() {
         ) : (
           <div className="my-events-grid">
             {myEvents.map(ev => {
-              const theme = getTheme(ev.theme || ev.type || 'grigliata');
+              const theme = getTheme(ev.theme || ev.type || 'grigliata', ev.colorPalette);
               const status = getStatusInfo(ev.status || 'active');
               return (
                 <div

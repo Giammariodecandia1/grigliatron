@@ -23,7 +23,7 @@ export default function UpdatesCard() {
   const { user } = useAuth();
   const { isEventAdmin } = useEvent();
   const { event, updates, addUpdate, deleteUpdate, updateItem, sendEmailNotification } = useEvent();
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
   const [showForm, setShowForm] = useState(false);
   const [text, setText] = useState('');
   const [tag, setTag] = useState('info');

@@ -13,7 +13,7 @@ const FOOD_CATEGORIES = ['Carne', 'Pane', 'Verdure', 'Bevande', 'Dolci', 'Condim
  */
 export default function FoodCard() {
   const { event, foodItems, addItem, currentUser: user } = useEvent();
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
 
   if (!event) return null;
 

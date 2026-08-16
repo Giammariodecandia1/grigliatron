@@ -14,7 +14,7 @@ export default function ReviewsCard() {
   const { user } = useAuth();
   const { isEventAdmin } = useEvent();
   const { event, reviews, addReview, deleteReview, updateItem } = useEvent();
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
   const [showForm, setShowForm] = useState(false);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');

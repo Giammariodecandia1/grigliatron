@@ -39,6 +39,7 @@ export function EventProvider({ eventId, currentUser, children }) {
   const [reviews, setReviews] = useState([]);
   const [polls, setPolls] = useState([]);
   const [shoppingLinks, setShoppingLinks] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // ─── Event document listener ─────────────────────────────────────
@@ -76,6 +77,7 @@ export function EventProvider({ eventId, currentUser, children }) {
   useEffect(() => { if (!eventId) return; const u = createSubListener('reviews', setReviews, 'createdAt'); return () => u(); }, [eventId]);
   useEffect(() => { if (!eventId) return; const u = createSubListener('polls', setPolls, 'createdAt'); return () => u(); }, [eventId]);
   useEffect(() => { if (!eventId) return; const u = createSubListener('shoppingLinks', setShoppingLinks, 'createdAt'); return () => u(); }, [eventId]);
+  useEffect(() => { if (!eventId) return; const u = createSubListener('feedbacks', setFeedbacks, 'createdAt'); return () => u(); }, [eventId]);
 
   // ─── Per-event admin check ───────────────────────────────────────
   const isEventAdmin = useMemo(() => {
@@ -332,6 +334,20 @@ export function EventProvider({ eventId, currentUser, children }) {
     await deleteDoc(doc(db, 'events', eventId, 'shoppingLinks', linkId));
   }, [eventId]);
 
+  // ─── Feedbacks ───────────────────────────────────────────────────
+  const addFeedback = useCallback(async (data) => {
+    if (!eventId) return;
+    await addDoc(collection(db, 'events', eventId, 'feedbacks'), {
+      ...data,
+      createdAt: serverTimestamp(),
+    });
+  }, [eventId]);
+
+  const deleteFeedback = useCallback(async (feedbackId) => {
+    if (!eventId) return;
+    await deleteDoc(doc(db, 'events', eventId, 'feedbacks', feedbackId));
+  }, [eventId]);
+
   // ─── Templates ───────────────────────────────────────────────────
   /**
    * Carica un template aggiungendo items al contenuto esistente.
@@ -428,6 +444,18 @@ export function EventProvider({ eventId, currentUser, children }) {
     return result.url;
   }, [eventId]);
 
+  // ─── Pagamenti saldati ──────────────────────────────────────────
+  const settlePayment = useCallback(async (paymentData) => {
+    if (!eventId) return;
+    await updateDoc(doc(db, 'events', eventId), {
+      settledPayments: arrayUnion({
+        ...paymentData,
+        settledAt: new Date().toISOString(),
+      }),
+      updatedAt: serverTimestamp(),
+    });
+  }, [eventId]);
+
   // ─── Cleanup Receipts (Archiviazione logica) ────────────────────
   /**
    * Pulisce i riferimenti agli scontrini dai documenti expense.
@@ -463,6 +491,7 @@ export function EventProvider({ eventId, currentUser, children }) {
     reviews,
     polls,
     shoppingLinks,
+    feedbacks,
     // Event
     updateEvent,
     // Participants
@@ -495,6 +524,9 @@ export function EventProvider({ eventId, currentUser, children }) {
     addShoppingLink,
     updateShoppingLink,
     deleteShoppingLink,
+    // Feedbacks
+    addFeedback,
+    deleteFeedback,
     // Templates
     loadTemplate,
     // Email notifications (M4)
@@ -502,6 +534,7 @@ export function EventProvider({ eventId, currentUser, children }) {
     // Post-evento
     uploadCoverImage,
     cleanupReceipts,
+    settlePayment,
   };
 
   return (

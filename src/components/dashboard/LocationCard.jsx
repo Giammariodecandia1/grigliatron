@@ -11,7 +11,7 @@ import { extractCoordinates } from '../../utils/locationUtils';
 export default function LocationCard() {
   const { isEventAdmin } = useEvent();
   const { event, updateEvent } = useEvent();
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({});

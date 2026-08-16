@@ -17,7 +17,7 @@ export default function ExpensesCard() {
   const { user } = useAuth();
   const { isEventAdmin } = useEvent();
   const { event, expenses, participants, addExpense, deleteExpense, updateItem } = useEvent();
-  const theme = getTheme(event?.theme || event?.type);
+  const theme = getTheme(event?.theme || event?.type, event?.colorPalette);
 
   // Form state
   const [showForm, setShowForm] = useState(false);
@@ -264,7 +264,6 @@ export default function ExpensesCard() {
                           <input
                             type="file"
                             accept="image/*"
-                            capture="environment"
                             className="input-file-hidden"
                             ref={editFileInputRef}
                             onChange={e => handleFileSelect(e.target.files[0], setEditReceiptFile, setEditReceiptPreview)}
@@ -426,7 +425,6 @@ export default function ExpensesCard() {
                   <input
                     type="file"
                     accept="image/*"
-                    capture="environment"
                     className="input-file-hidden"
                     ref={fileInputRef}
                     onChange={e => handleFileSelect(e.target.files[0], setReceiptFile, setReceiptPreview)}
